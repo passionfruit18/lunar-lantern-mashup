@@ -75,7 +75,10 @@ def handle_create_session(data):
     
     join_room(room_code)
     print(f"Game Created: {room_code}")
-    emit('session_created', {'room_code': room_code, 'username': username, 'board': new_game.board})
+    emit('session_created', {
+        'room_code': room_code,
+        'username': username,
+        'board': new_game.board})
 
 @socketio.on('join_session')
 def handle_join_session(data):
