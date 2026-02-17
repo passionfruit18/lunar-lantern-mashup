@@ -52,9 +52,10 @@
 
         socket.on('session_created', (data) => {
             enterRoom(data.room_code, data.username);
+            drawBoard(data.board);
         });
 
-        socket.on('joined_room', (data) => {
+        socket.on('join_success', (data) => {
             enterRoom(data.room_code, data.username);
             drawBoard(data.board);
         });

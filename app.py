@@ -71,7 +71,7 @@ def handle_create_session(data):
     
     join_room(room_code)
     print(f"Game Created: {room_code}")
-    emit('session_created', {'room_code': room_code, 'username': username})
+    emit('session_created', {'room_code': room_code, 'username': username, 'board': new_game.board})
 
 @socketio.on('join_session')
 def handle_join_session(data):
@@ -86,13 +86,18 @@ def handle_join_session(data):
         success = game.add_user((username, session_id))
         
         if success:
-            join_room(room_code)
-            emit('joined_room', {
-                'room_code': room_code, 
-                'board': game.board,
-                'players': [p[0] for p in game.players], # Send list of usernames
-                'username': username
+            join_room(room_code)        
+
+            emit('join_success', {
+                'room_code': room_code,
+                'username': username,
+                'board': game.board
+            }, to=session_id)
+
+            emit('player_list_updated', {
+                'players': [p[0] for p in game.players]
             }, to=room_code)
+
         else:
             emit('error', {'message': 'Room Full'})
     else:
