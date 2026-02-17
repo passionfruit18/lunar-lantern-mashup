@@ -28,6 +28,9 @@ class Game:
             return True
         return False
     
+    def get_player_names(self) -> List[str]:
+        return [p[0] for p in self.players]
+    
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
 sessions = {}
