@@ -9,6 +9,24 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hanzi_secret_123'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+class Game:
+    def __init__(self, room_code):
+        self.room_code = room_code
+        self.board = [["" for _ in range(15)] for _ in range(15)]
+        self.players = []  # List of (username, session_id) tuples
+        self.status = "waiting"
+
+    def add_user(self, user_data):
+        """
+        Accepts a tuple (username: string, session_id: string)
+        and adds them to the game.
+        """
+        if len(self.players) < 4:  # Scrabble limit
+            self.players.append(user_data)
+            print(f"User {user_data[0]} added to Room {self.room_code}")
+            return True
+        return False
+    
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
 sessions = {}
@@ -36,22 +54,47 @@ def index():
     return render_template('index.html')
 
 @socketio.on('create_session')
-def handle_create_session():
+def handle_create_session(data):
     """Creates a room, registers it, and notifies the creator."""
-    code = generate_session_code()
-    sessions[code] = create_new_game()
-    join_room(code)
-    print(f"Game Created: {code}")
-    emit('session_created', {'room': code})
+
+    username = data.get('username')
+    session_id = request.sid  # Unique ID for this specific connection
+    
+    # 1. Generate Lucky Room Code
+    room_code = generate_session_code()
+    
+    # 2. Initialize Game Object
+    new_game = Game(room_code)
+    new_game.add_user((username, session_id))
+    
+    sessions[room_code] = new_game
+    
+    join_room(room_code)
+    print(f"Game Created: {room_code}")
+    emit('session_created', {'room_code': room_code, 'username': username})
 
 @socketio.on('join_session')
 def handle_join_session(data):
     """Validates the room code and adds the player to the session."""
-    room = data.get('room')
-    if room in sessions:
-        join_room(room)
-        # Add player logic could go here
-        emit('joined_room', {'room': room, 'board': sessions[room]['board']})
+
+    username = data.get('username')
+    room_code = data.get('room_code')
+    session_id = request.sid
+
+    if room_code in sessions:
+        game = sessions[room_code]
+        success = game.add_user((username, session_id))
+        
+        if success:
+            join_room(room_code)
+            emit('joined_room', {
+                'room_code': room_code, 
+                'board': game.board,
+                'players': [p[0] for p in game.players], # Send list of usernames
+                'username': username
+            }, to=room_code)
+        else:
+            emit('error', {'message': 'Room Full'})
     else:
         emit('error', {'message': 'Invalid Room Code'})
 

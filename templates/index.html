@@ -15,6 +15,8 @@
     <h1>Hanzi-Dash 汉字</h1>
 
     <div id="setup-area" class="menu">
+        <input type="text" id="username" placeholder="Enter Username" required>
+        <br><br>
         <button onclick="createGame()">Create New Game</button>
         <br><br>
         <input type="text" id="session-code" placeholder="Enter Code">
@@ -22,7 +24,8 @@
     </div>
 
     <div id="game-area" class="hidden">
-        <h3>Room: <span id="display-code"></span></h3>
+        <h3>Room: <span id="display-room-code"></span></h3>
+        <h3>User: <span id="display-username"></span></h3>
         <canvas id="game-canvas" width="600" height="600"></canvas>
         <div id="controls">
             <p>Click a square to place a tile (Simulated for Demo)</p>
@@ -35,28 +38,33 @@
         let currentRoom = "";
 
         function createGame() {
-            socket.emit('create_session');
+            const user = document.getElementById('username').value;
+            if (!user) return alert("Please enter a username");
+            socket.emit('create_session', { username: user });
         }
 
         function joinGame() {
-            const code = document.getElementById('session-code').value.toUpperCase();
-            socket.emit('join_session', {room: code});
+            const username = document.getElementById('username').value;
+            const room_code = document.getElementById('session-code').value.toUpperCase();
+            if (!username || !room_code) return alert("Enter both username and code");
+            socket.emit('join_session', { username: username, room_code: room_code });
         }
 
         socket.on('session_created', (data) => {
-            enterRoom(data.room);
+            enterRoom(data.room_code, data.username);
         });
 
         socket.on('joined_room', (data) => {
-            enterRoom(data.room);
+            enterRoom(data.room_code, data.username);
             drawBoard(data.board);
         });
 
-        function enterRoom(code) {
-            currentRoom = code;
+        function enterRoom(room_code, username) {
+            currentRoom = room_code;
             document.getElementById('setup-area').classList.add('hidden');
             document.getElementById('game-area').classList.remove('hidden');
-            document.getElementById('display-code').innerText = code;
+            document.getElementById('display-room-code').innerText = room_code;
+            document.getElementById('display-username').innerText = username;
         }
 
         function drawBoard(board) {
