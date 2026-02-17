@@ -26,6 +26,7 @@
     <div id="game-area" class="hidden">
         <h3>Room: <span id="display-room-code"></span></h3>
         <h3>User: <span id="display-username"></span></h3>
+        <ul id="player-list"></ul>
         <canvas id="game-canvas" width="600" height="600"></canvas>
         <div id="controls">
             <p>Click a square to place a tile (Simulated for Demo)</p>
@@ -85,6 +86,21 @@
                     }
                 }
             }
+        }
+
+        // This fires for everyone whenever the player list changes
+        socket.on('player_list_updated', (data) => {
+            updatePlayerSidebar(data.players);
+        });
+
+        function updatePlayerSidebar(players) {
+            const listElement = document.getElementById('player-list');
+            listElement.innerHTML = ""; // Clear current list
+            players.forEach(name => {
+                const li = document.createElement('li');
+                li.innerText = name;
+                listElement.appendChild(li);
+            });
         }
 
         function leaveGame() {
