@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+      /* Basic Options */
+      "target": "ES6",                          // Modern JS support
+      "module": "commonjs",                     // Standard module system
+      "lib": ["DOM", "ES6", "DOM.Iterable"],                    // Ensure Browser APIs are available
+      "allowJs": true,                          // Allow mixing in existing JS files
+      
+      /* Output Folder Logic */
+      "outDir": "./static/js",                  // Redirects compiled JS to Flask's static folder
+      "rootDir": "./src/ts",                    // Where you write your TypeScript
+      "removeComments": true,                   // Keeps the production JS file small
+      
+      /* Strict Type-Checking */
+      "strict": true,                           // Best practice for bug prevention
+      "noImplicitAny": true,                    // Disallows 'any' type to ensure safety
+      "strictNullChecks": true,                 // Prevents "null is not an object" errors
+      
+      /* Module Resolution */
+      "moduleResolution": "node",
+      "esModuleInterop": true,                  // Compatibility with Socket.io imports
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/ts/**/*"],                 // Only watch files in this folder
+    "exclude": ["node_modules", "static"]       // Don't re-process the output
+  }

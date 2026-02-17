@@ -1,0 +1,8 @@
+# Ignore compiled JavaScript from TypeScript
+static/js/game.js
+
+# Ignore TypeScript build info
+*.tsbuildinfo
+
+# Ignore dependency folders
+node_modules/**

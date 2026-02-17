@@ -1,0 +1,16 @@
+{
+  "name": "2026_02_17_hanzi_dash",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/socket.io-client": "^1.4.36",
+    "typescript": "^5.9.3"
+  }
+}
