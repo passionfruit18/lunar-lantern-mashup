@@ -11,13 +11,13 @@ app.config['SECRET_KEY'] = 'hanzi_secret_123'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 class Game:
-    def __init__(self, room_code):
-        self.room_code = room_code
-        self.board = [["" for _ in range(15)] for _ in range(15)]
-        self.players = []  # List of (username, session_id) tuples
+    def __init__(self, room_code: str):
+        self.room_code: str = room_code
+        self.board: List[List[str]] = [["" for _ in range(15)] for _ in range(15)]
+        self.players: List[Tuple[str, str]] = []  # List of (username, session_id) tuples
         self.status = "waiting"
 
-    def add_user(self, user_data):
+    def add_user(self, user_data: Tuple[str, str]) -> bool:
         """
         Accepts a tuple (username: string, session_id: string)
         and adds them to the game.
