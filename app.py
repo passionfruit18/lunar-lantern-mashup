@@ -3,6 +3,7 @@ import random
 import string
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
+from typing import List, Tuple, Dict, Optional
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
