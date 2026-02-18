@@ -4,6 +4,7 @@ import string
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
+from models.board import GameBoard
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
@@ -13,7 +14,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 class Game:
     def __init__(self, room_code: str):
         self.room_code: str = room_code
-        self.board: List[List[str]] = [["" for _ in range(15)] for _ in range(15)]
+        self.board: GameBoard = GameBoard()
         self.players: List[Tuple[str, str]] = []  # List of (username, session_id) tuples
         self.status = "waiting"
 
@@ -33,7 +34,7 @@ class Game:
     
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
-sessions = {}
+sessions: Dict[str, Game] = {}
 
 # --- CORE GAME LOGIC ---
 
@@ -78,7 +79,7 @@ def handle_create_session(data):
     emit('session_created', {
         'room_code': room_code,
         'username': username,
-        'board': new_game.board})
+        'board': new_game.board.to_dict()})
 
 @socketio.on('join_session')
 def handle_join_session(data):
@@ -89,7 +90,7 @@ def handle_join_session(data):
     session_id = request.sid
 
     if room_code in sessions:
-        game = sessions[room_code]
+        game: Game = sessions[room_code]
         success = game.add_user((username, session_id))
         
         if success:
@@ -98,7 +99,7 @@ def handle_join_session(data):
             emit('join_success', {
                 'room_code': room_code,
                 'username': username,
-                'board': game.board
+                'board': game.board.to_dict()
             }, to=session_id)
 
             emit('player_list_updated', {

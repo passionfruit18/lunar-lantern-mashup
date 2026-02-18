@@ -1,6 +1,29 @@
 const socket = io();
 
-type Board = string[][];
+enum SquareType {
+    NORMAL = "NORMAL",
+    SPECIAL_TRANSLATION = "SPECIAL_TRANSLATION",
+    DOUBLE_POINT = "DOUBLE_POINT",
+    TRIPLE_POINT = "TRIPLE_POINT"
+}
+
+interface TileData {
+    type: 'english' | 'chinese';
+    display: string;
+    components?: string[];
+    points?: number;
+}
+
+interface SquareData {
+    square_type: SquareType;
+    tile: TileData | null;
+}
+
+const printSquare = (square: SquareData): string => {
+    return JSON.stringify(square, null, 2);
+};
+
+type Board = SquareData[][];
 
 interface SessionData {
     room_code: string;
@@ -61,7 +84,7 @@ function drawBoard(board: Board) {
             if (board && board[r][c]) {
                 ctx.fillStyle = "black";
                 ctx.font = "20px Arial";
-                ctx.fillText(board[r][c], c * size + 10, r * size + 28);
+                ctx.fillText(printSquare(board[r][c]), c * size + 10, r * size + 28);
             }
         }
     }

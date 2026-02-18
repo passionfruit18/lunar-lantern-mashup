@@ -6,3 +6,5 @@ static/js/game.js
 
 # Ignore dependency folders
 node_modules/**
+
+**/__pycache__/**

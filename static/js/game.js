@@ -1,5 +1,15 @@
 "use strict";
 const socket = io();
+var SquareType;
+(function (SquareType) {
+    SquareType["NORMAL"] = "NORMAL";
+    SquareType["SPECIAL_TRANSLATION"] = "SPECIAL_TRANSLATION";
+    SquareType["DOUBLE_POINT"] = "DOUBLE_POINT";
+    SquareType["TRIPLE_POINT"] = "TRIPLE_POINT";
+})(SquareType || (SquareType = {}));
+const printSquare = (square) => {
+    return JSON.stringify(square, null, 2);
+};
 let currentRoom = "";
 function createGame() {
     var _a;
@@ -50,7 +60,7 @@ function drawBoard(board) {
             if (board && board[r][c]) {
                 ctx.fillStyle = "black";
                 ctx.font = "20px Arial";
-                ctx.fillText(board[r][c], c * size + 10, r * size + 28);
+                ctx.fillText(printSquare(board[r][c]), c * size + 10, r * size + 28);
             }
         }
     }
