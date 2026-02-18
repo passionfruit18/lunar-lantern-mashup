@@ -76,6 +76,8 @@ def create_tile(user_input: str) -> Union[EnglishTile, ChineseTileGroup]:
     # \u2e80-\u2eff: CJK Radicals Supplement
     if re.match(r'^[\u4e00-\u9fff\u2f00-\u2fdf\u2e80-\u2eff]$', char):
         # Even though it's a single char, we initialize it as the first part
-        return ChineseTileGroup(parts=[char])
+        tileGroup = ChineseTileGroup(parts=[char])
+        tileGroup.combine()
+        return tileGroup
     
     raise ValueError(f"Unsupported character: {char}")
