@@ -64,7 +64,7 @@ class Game:
                 if not hand:
                     return False, "Hand doesn't exist"
                 
-                pending_move_values = [pending_move["value"] for pending_move in pending_moves if pending_move.get('value')]
+                pending_move_values = [pending_move["value"].upper() for pending_move in pending_moves if pending_move.get('value')]
 
                 # Check move can be made from hand
                 if not hand.has_required_tiles(pending_move_values, language_type):
