@@ -73,6 +73,8 @@ function undoPendingMoves() {
     }
 }
 
+const cancelMove = undoPendingMoves
+
 function enterRoom(room_code: string, username: string) {
     currentRoom = room_code;
     document?.getElementById('setup-area')?.classList.add('hidden');
@@ -261,3 +263,4 @@ function leaveGame() {
 (window as any).joinGame = joinGame;
 (window as any).leaveGame = leaveGame;
 (window as any).submitMove = submitMove;
+(window as any).cancelMove = cancelMove;
