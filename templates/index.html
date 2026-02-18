@@ -33,8 +33,14 @@
     <div id="game-area" class="hidden">
         <h3>Room: <span id="display-room-code"></span></h3>
         <h3>User: <span id="display-username"></span></h3>
-        <ul id="player-list"></ul>
-        <canvas id="game-canvas" width="600" height="600"></canvas>
+        <div class="game-container">
+            <canvas id="game-canvas" width="600" height="600"></canvas>
+            
+            <div class="sidebar">
+                <h3>Players</h3>
+                <ul id="player-list"></ul>
+                </div>
+            </div>
         <div id="controls">
             <p>Click a square to place a tile (Simulated for Demo)</p>
             <button onclick="submitMove()">Submit Move</button>
