@@ -110,12 +110,11 @@ def join_session_inner(room_code, username, game_board, socket_session_id, game_
     
 @socketio.on('submit_move')
 def handle_submit_move(data):
-    """Validates the room code and adds the player to the session."""
+    """Submit Move to the Core Game Engine"""
     
-
     pendingMoves = data.get('pendingMoves')
     print(f"Pending Moves: ${pendingMoves}")
-    # Typescript Dict to Python Class
+    # Translate Dict to Python Class
     pending_moves = [PendingMove.from_dict(pendingMove) for pendingMove in pendingMoves]
     def inner_func(room_code, session_id, game: Game):
 
