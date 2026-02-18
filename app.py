@@ -59,12 +59,15 @@ class Game:
                 # Check consistent language and single Chinese characters and single English characters
                 language_type = get_consistent_language(pending_moves)
 
+                # TODO: Remove position-duplicates i.e. two letters in the same position
+
                 hand = player.hand
 
                 if not hand:
                     return False, "Hand doesn't exist"
                 
-                pending_move_values = [pending_move["value"].upper() for pending_move in pending_moves if pending_move.get('value')]
+                # Normalise English to Upper
+                pending_move_values = [pending_move.value.upper() for pending_move in pending_moves if pending_move.value]
 
                 # Check move can be made from hand
                 if not hand.has_required_tiles(pending_move_values, language_type):
@@ -72,18 +75,57 @@ class Game:
 
                 # Check move can be made on board (empty squares)
                 for pending_move in pending_moves:
-                    row = pending_move['row']
-                    col = pending_move['col']
+                    row = pending_move.row
+                    col = pending_move.col
                     game_square = self.board.grid[row][col]
                     if (game_square.tile):
                         return False, f"Value already exists at row: ${row}, col: ${col}"
                     
+                # TODO: Check that the pending moves, PLUS THE WORDS THEY TOUCH is a valid word in dictionary (English OR Chinese)
+                # This is going to be tricky. A lot of stuff in GameBoard
+                """
+                GAME RULES
+                2. In a turn, a player can:
+
+                2a-i. Compose a Chinese character, a two-character word,
+                or a 4-character ChengYu using the radicals and basic Chinese characters. Scored accordingly.
+
+                2a-ii. Chinese-Chinese reuse:
+                Can use a character from another player's Chinese character sequence
+                (horizontal or vertical) to start another sequence
+                (vertical or horizontal respectively).
+
+                2a-iii. English as Chinese reuse:
+                If English sequence forms a Pinyin of a Chinese character,
+                the player may re-use that English sequence (from the end of the sequence)
+                (whether perpendicularly or in sequence)
+                as that Chinese character if they specify what that character is.
+
+                2b-i. Compose an English word as in normal Scrabble.
+
+                2b-ii. English-English reuse: as in normal Scrabble.
+
+                2b-iii. Chinese as English reuse:
+                The first letter of the pinyin of the Chinese word
+                or any of its radicals can be re-used as an English letter.
+                """
+
+                all_sequences = self.board.get_all_formed_words(pending_moves)
+                dict = Dictionary()
+                success, message = dict.validate_moves(all_sequences)
+
+                # WAIT! Let's test things out a bit before we enable this validation
+                if (not success):
+                    return False, message
+
                 # Make the moves!
                 for pending_move in pending_moves:
-                    row = pending_move['row']
-                    col = pending_move['col']
+                    row = pending_move.row
+                    col = pending_move.col
                     game_square = self.board.grid[row][col]
-                    game_square.tile = create_tile(pending_move['value'])
+                    # TODO: Compose Chinese character with combination of radicals and basic character.
+                    # This is a full-stack feature from front to back end
+                    game_square.tile = create_tile(pending_move.value)
 
 
                 # Subtract pending_moves from Hand
@@ -209,9 +251,11 @@ def handle_submit_move(data):
 
     pendingMoves = data.get('pendingMoves')
     print(f"Pending Moves: ${pendingMoves}")
+    # Typescript Dict to Python Class
+    pending_moves = [PendingMove.from_dict(pendingMove) for pendingMove in pendingMoves]
     def inner_func(room_code, session_id, game: Game):
 
-        success, message = game.validate_and_apply_move(session_id, pendingMoves)
+        success, message = game.validate_and_apply_move(session_id, pending_moves)
         
         if success:
 
