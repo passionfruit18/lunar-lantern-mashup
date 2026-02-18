@@ -73,8 +73,13 @@ class Dictionary:
         return word.lower() in self.english_words
 
     def is_chinese_valid(self, word: str) -> bool:
-        # Check if it's a standard word OR a 4-character ChengYu
-        return word in self.chinese_words or word in self.chengyu
+        """
+        Checks if the string exists as a valid entry in CC-CEDICT.
+        This automatically covers single characters, words, and ChengYu.
+        """
+        # definition_lookup returns a list of definitions if found, else None
+        result = self.hanzi_dict.definition_lookup(word)
+        return result is not None and len(result) > 0
     
 
     def validate_moves(self, all_formed_sequences: List[List[PendingMove]]) -> bool:
