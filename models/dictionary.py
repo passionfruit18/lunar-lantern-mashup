@@ -3,16 +3,9 @@ from typing import List
 from .tiles import LanguageType
 from .moves import PendingMove
 import nltk
+from hanzipy.dictionary import HanziDictionary
 
 nltk.download('words')
-
-# Optional: pip install nltk
-try:
-    from nltk.corpus import words
-    ENGLISH_SET = set(w.lower() for w in words.words())
-except ImportError:
-    # Fallback if nltk isn't installed yet
-    ENGLISH_SET = {"cat", "dog", "game"} 
 
 class Dictionary:
 
@@ -39,9 +32,8 @@ class Dictionary:
         # Placeholder for your actual file loading logic
         # Example: with open('en_words.txt') as f: ...
         # TODO: Add Chinese Dictionary Corpus
-        self.chinese_words.update(["你好", "学习"])
-        self.chengyu.update(["一心一意", "马到成功"])
-        print(f"--- Dictionary Loaded: {len(self.english_words)} EN words, {len(self.chengyu)} ChengYu ---")
+        self.hanzi_dict = HanziDictionary()
+        print(f"--- Dictionary Loaded: {len(self.english_words)} EN words, ?? Chinese ---")
 
     def __init__(self):
         if hasattr(self, '_initialized') and self._initialized:
