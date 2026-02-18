@@ -6,13 +6,16 @@ from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
 from models.board import GameBoard
 from models.player import Player
+from models.moves import is_straight_line
+from models.tiles import create_tile
+import threading
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hanzi_secret_123'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-testing: bool = True
+testing: bool = False
 
 class Game:
     def __init__(self, room_code: str):
@@ -22,6 +25,7 @@ class Game:
             self.board.initialize_random_tiles()
         self.players: List[Player] = []  # List of (username, session_id) tuples
         self.status = "waiting"
+        self.lock = threading.Lock()
 
     def add_user(self, username: string, session_id: string) -> bool:
         """
@@ -36,6 +40,45 @@ class Game:
     
     def get_player_names(self) -> List[str]:
         return [p.username for p in self.players]
+    
+    def validate_and_apply_move(self, session_id, pending_moves) -> Tuple[str, str]:
+        # 1. Acquire the lock
+        with self.lock:
+            # 2. Check Linearity
+            if not is_straight_line(pending_moves):
+                return False, "Moves must be in a straight horizontal or vertical line."
+            
+            # TODO: Check all characters are either English or Chinese
+
+            # TODO: Make sure spots to be filled are empty!
+            # This was kind of checked on the front end as well but just to make sure
+                    
+
+            # TODO: Make sure pending_moves can be made from Hand
+
+            # 3. Apply to board
+            for m in pending_moves:
+                self.board.grid[m['row']][m['col']].tile = create_tile(m['value'])
+
+
+            # TODO: Subtract pending_moves from Hand
+
+            # 4. Replenish Hand
+            player = self.find_by_session_id(session_id)
+            if player:
+                player.hand.replenish_hand()
+
+            # TODO: Add scoring method (with AI haha) and add Score to player
+
+            return True, "Success"
+    
+    def find_by_session_id(self, session_id: str) -> Optional[Player]:
+        """
+        Returns the Player object with the matching session_id, 
+        or None if no match is found.
+        """
+        # Using a generator expression (memory efficient)
+        return next((p for p in self.players if p.session_id == session_id), None)
     
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
