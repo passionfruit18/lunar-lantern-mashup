@@ -1,7 +1,9 @@
 from typing import List, Optional
 from .chinese_chars import selectRandomChineseCharacter
 from .english import selectRandomEnglishLetter
+from .tiles import LanguageType
 import uuid
+from collections import Counter
 
 class Score:
     def __init__(
@@ -49,6 +51,35 @@ class Hand:
             "chinese": self.chinese_characters,
             "english": self.english_letters
         }
+    
+    def has_required_tiles(self, pending_values: List[str], lang: LanguageType) -> bool:
+        """
+        Checks if the hand contains all the characters needed for the move,
+        accounting for duplicates.
+        """
+        # 1. Select the correct sub-hand
+        current_hand = self.english_letters if lang == LanguageType.ENGLISH else self.chinese_characters
+        
+        # 2. Count occurrences in the hand and the requested move
+        hand_counts = Counter(current_hand)
+        move_counts = Counter(pending_values)
+        
+        # 3. Ensure every character in the move exists in the hand in sufficient quantity
+        for char, count in move_counts.items():
+            if hand_counts[char] < count:
+                return False
+        return True
+
+    def consume_tiles(self, pending_values: List[str], lang: LanguageType):
+        """
+        Removes the used tiles from the hand. 
+        Assumes has_required_tiles was already called and returned True.
+        """
+        current_hand = self.english_letters if lang == LanguageType.ENGLISH else self.chinese_characters
+        
+        for char in pending_values:
+            # remove() removes only the first occurrence of the value
+            current_hand.remove(char)
 
 class Player:
     def __init__(self, username: str, session_id: str):
