@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
 from models.board import GameBoard
 from models.player import Player
-from models.moves import is_straight_line
+from models.moves import is_straight_line, get_consistent_language
 from models.tiles import create_tile
 import threading
 
