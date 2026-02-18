@@ -62,3 +62,4 @@ def get_consistent_language(pending_moves: List[PendingMove]) -> LanguageType:
 
     # Return the single language present in the set
     return detected_langs.pop()
+

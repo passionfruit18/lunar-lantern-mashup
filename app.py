@@ -42,6 +42,7 @@ class Game:
     def get_player_names(self) -> List[str]:
         return [p.username for p in self.players]
     
+    # CORE GAME LOOP: EACH MOVE!
     def validate_and_apply_move(self, session_id, pending_moves) -> Tuple[bool, str]:
         # Acquire the lock
         with self.lock:
@@ -135,8 +136,9 @@ class Game:
                 # Replenish Hand
                 
                 player.hand.replenish_hand()
-
-                # TODO: Add scoring method (with AI haha) and add Score to player
+                
+                # TODO: Add basic scoring method and add Score to player with dictionary
+                # TODO: Add Chinese-English dual synergy with AI for score multiplier
 
                 return True, "Success"
             

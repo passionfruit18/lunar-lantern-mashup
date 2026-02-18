@@ -58,6 +58,16 @@ socket.on('update_board', (data: SessionData) => {
     drawBoard(data.board);
 });
 
+// Error
+socket.on('error', (data: {'message': string}) => {
+    alert(data.message);    
+    undoPendingMoves()
+});
+
+function undoPendingMoves() {
+    pendingMoves = []
+}
+
 function enterRoom(room_code: string, username: string) {
     currentRoom = room_code;
     document?.getElementById('setup-area')?.classList.add('hidden');
