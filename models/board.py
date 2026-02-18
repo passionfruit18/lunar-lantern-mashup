@@ -201,3 +201,25 @@ class GameBoard:
         print(f"All Valid Sequences: {valid_sequences_print}")
         return valid_sequences
     
+    def get_adjacent_synergies(self, new_word_moves: List[PendingMove]):
+        """
+        Finds existing words on the board that are adjacent to the newly placed word
+        but belong to the DIFFERENT language category.
+        """
+        adjacent_context = []
+        for move in new_word_moves:
+            # Check North, South, East, West for existing tiles
+            for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+                r, c = move.row + dr, move.col + dc
+                if 0 <= r < 15 and 0 <= c < 15:
+                    neighbor = self.grid[r][c].tile
+                    if neighbor and neighbor.type != move.type:
+                        adjacent_context.append({
+                            "original": move.value,
+                            "neighbor": neighbor.show(),
+                            "context": f"Placed {move.value} next to {neighbor.show()}"
+                        })
+                        # TODO: Need to go in the perpendicular direction to new_word_moves, and also "expand" the other-language word
+        print_adj = ', '.join([ctx["neighbor"] for ctx in adjacent_context])
+        print(f"Adjacent Words: {print_adj}")
+        return adjacent_context

@@ -20,7 +20,7 @@ class EnglishTile:
             "points": self.points
         }
     
-    def show(self):
+    def show(self) -> str:
         return self.char
 
 class ChineseTileGroup:
@@ -54,7 +54,7 @@ class ChineseTileGroup:
             "components": self.parts
         }
     
-    def show(self):
+    def show(self) -> str:
         return self.actualized_char
 
 # Type alias for clarity

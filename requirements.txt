@@ -3,3 +3,5 @@ flask-socketio
 eventlet
 nltk
 hanzipy
+python-dotenv
+google-genai

@@ -11,6 +11,7 @@ from models.tiles import create_tile, LanguageType
 from models.dictionary import Dictionary
 from models.english import score_english_word
 from models.chinese_chars import score_chinese_word
+from models.gemini import SynergyEngine, SynergyScoreResult
 import threading
 
 # --- CONFIGURATION & GLOBALS ---
@@ -29,6 +30,7 @@ class Game:
         self.players: List[Player] = []  # List of (username, session_id) tuples
         self.status = "waiting"
         self.lock = threading.Lock()
+        self.synergy_engine = SynergyEngine()
 
     def add_user(self, username: string, session_id: string) -> bool:
         """
@@ -142,25 +144,48 @@ class Game:
                 
                 player.hand.replenish_hand()
                 
+                # TODO: Add Chinese-English dual synergy with AI for score multiplier
+
+
                 if language_type == LanguageType.ENGLISH:
                     english_words = ["".join([m.value for m in moves]) for moves in all_sequences]
-                    score = Score(english_words,
-                                  [],
-                                  0,
-                                  "",
-                                  sum(score_english_word(word) for word in english_words))
+                    chinese_words = [context['neighbor'] for context in self.board.get_adjacent_synergies(pending_moves)]
+                    # Could be more than pending_move?
+                    if chinese_words:
+                        synergy_score_result: SynergyScoreResult = self.synergy_engine.calculate_synergy(english_words, chinese_words)
+                        score = Score(english_words,
+                                    chinese_words,
+                                    synergy_score_result.synergy_score,
+                                    synergy_score_result.synergy_explanation,
+                                    sum(score_english_word(word) for word in english_words))
+                    else:
+                        score = Score(english_words,
+                                    [],
+                                    0,
+                                    "",
+                                    sum(score_english_word(word) for word in english_words))
                 elif language_type == LanguageType.CHINESE:
                     chinese_words = ["".join([m.value for m in moves]) for moves in all_sequences]
-                    score = Score([],
-                                  chinese_words,
-                                  0,
-                                  "",
-                                  sum(score_chinese_word(word) for word in chinese_words))
+                    english_words = [context['neighbor'] for context in self.board.get_adjacent_synergies(pending_moves)]
+                    # Could be more than pending_move?
+                    if english_words:
+
+                        synergy_score_result: SynergyScoreResult = self.synergy_engine.calculate_synergy(english_words, chinese_words)
+                        score = Score(english_words,
+                                    chinese_words,
+                                    synergy_score_result.synergy_score,
+                                    synergy_score_result.synergy_explanation,
+                                    sum(score_chinese_word(word) for word in chinese_words))
+                    else:
+                        score = Score([],
+                                    chinese_words,
+                                    0,
+                                    "",
+                                    sum(score_chinese_word(word) for word in chinese_words))
                 else:
                     raise ValueError(f"Unsupported language type: {language_type}")
                 
                 player.score_history.append(score)                
-                # TODO: Add Chinese-English dual synergy with AI for score multiplier
 
                 return True, "Success"
             
