@@ -4,6 +4,7 @@ import * as PlayerModule from "./player";
 
 export const socket = io();
 
+const BOARD_SIZE = 15;
 
 interface SessionData {
     room_code: string;
@@ -73,11 +74,10 @@ function drawBoard(board: BoardModule.Board) {
     prepareCanvas(canvas)
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     const size = 40; // square size
-    const lengthBoard = 15 // length of board
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let r = 0; r < lengthBoard; r++) {
-        for (let c = 0; c < lengthBoard; c++) {
+    for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
             const x = c * size
             const y = r * size
             ctx.strokeStyle = "#ccc";
@@ -161,32 +161,38 @@ function submitMove() {
     pendingMoves = []; // Clear for next turn
 }
 
+let canvasInitialised = false
+
+
 function prepareCanvas(canvas: HTMLCanvasElement) {
-    const BOARD_SIZE = 15;
-    
-    canvas.addEventListener('mousedown', (event: MouseEvent) => {
-        console.log("Canvas Clicked")
-        // 1. Get the bounding box of the canvas (accounts for scrolling/layout)
-        const rect = canvas.getBoundingClientRect();
-    
-        // 2. Calculate the "Local" X and Y relative to the canvas top-left
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-    
-        // 3. Divide by cell size and 'Floor' it to get the integer index
-        const cellSize = canvas.width / BOARD_SIZE;
+
+    if (!canvasInitialised) {        
+        canvas.addEventListener('mousedown', (event: MouseEvent) => {
+            console.log("Canvas Clicked")
+            // 1. Get the bounding box of the canvas (accounts for scrolling/layout)
+            const rect = canvas.getBoundingClientRect();
         
-        const col = Math.floor(mouseX / cellSize);
-        const row = Math.floor(mouseY / cellSize);
-    
-        // 4. Safety Check: Ensure the click wasn't on the border/padding
-        if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
-            console.log("Row:", row, "Column:", col)
-            if (globalBoard) {            
-                handleSquareClick(globalBoard, row, col);
+            // 2. Calculate the "Local" X and Y relative to the canvas top-left
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+        
+            // 3. Divide by cell size and 'Floor' it to get the integer index
+            const cellSize = canvas.width / BOARD_SIZE;
+            
+            const col = Math.floor(mouseX / cellSize);
+            const row = Math.floor(mouseY / cellSize);
+        
+            // 4. Safety Check: Ensure the click wasn't on the border/padding
+            if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+                console.log("Row:", row, "Column:", col)
+                if (globalBoard) {            
+                    handleSquareClick(globalBoard, row, col);
+                }
             }
-        }
-    });
+        });
+        canvasInitialised = true
+    }
+
 }
 
 
