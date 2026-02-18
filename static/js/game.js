@@ -48,8 +48,14 @@ function enterRoom(room_code, username) {
         usernameDisplay.innerText = username;
     }
 }
+let globalBoard = null;
+function isGameReady() {
+    return globalBoard !== null;
+}
 function drawBoard(board) {
+    globalBoard = board;
     const canvas = document.getElementById('game-canvas');
+    prepareCanvas(canvas);
     const ctx = canvas.getContext('2d');
     const size = 40;
     ctx.clearRect(0, 0, canvas.width, canvas.height);

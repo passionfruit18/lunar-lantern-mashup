@@ -70,9 +70,18 @@ function enterRoom(room_code: string, username: string) {
     }
 }
 
+// Define the global state
+let globalBoard: Board | null = null;
+
+// Helper to check if the board is ready
+function isGameReady(): boolean {
+    return globalBoard !== null;
+}
 
 function drawBoard(board: Board) {
+    globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
+    prepareCanvas(canvas)
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     const size = 40; // square size
 
