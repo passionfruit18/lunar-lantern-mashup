@@ -157,13 +157,15 @@ class Game:
                                     chinese_words,
                                     synergy_score_result.synergy_score,
                                     synergy_score_result.synergy_explanation,
-                                    sum(score_english_word(word) for word in english_words))
+                                    sum(score_english_word(word) for word in english_words),
+                                    LanguageType.ENGLISH)
                     else:
                         score = Score(english_words,
                                     [],
                                     0,
                                     "",
-                                    sum(score_english_word(word) for word in english_words))
+                                    sum(score_english_word(word) for word in english_words),
+                                    LanguageType.ENGLISH)
                 elif language_type == LanguageType.CHINESE:
                     chinese_words = ["".join([m.value for m in moves]) for moves in all_sequences]
                     english_words = [context['neighbor'] for context in self.board.get_adjacent_synergies(pending_moves)]
@@ -175,13 +177,15 @@ class Game:
                                     chinese_words,
                                     synergy_score_result.synergy_score,
                                     synergy_score_result.synergy_explanation,
-                                    sum(score_chinese_word(word) for word in chinese_words))
+                                    sum(score_chinese_word(word) for word in chinese_words),
+                                    LanguageType.CHINESE)
                     else:
                         score = Score([],
                                     chinese_words,
                                     0,
                                     "",
-                                    sum(score_chinese_word(word) for word in chinese_words))
+                                    sum(score_chinese_word(word) for word in chinese_words),
+                                    LanguageType.CHINESE)
                 else:
                     raise ValueError(f"Unsupported language type: {language_type}")
                 
