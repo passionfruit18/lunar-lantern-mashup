@@ -1,4 +1,6 @@
-import { io } from "socket.io-client";
+// Add this line at the top to tell TS 'io' exists globally
+declare var io: any;
+
 import * as BoardModule from "./board";
 import * as PlayerModule from "./player";
 
