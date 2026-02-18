@@ -99,6 +99,44 @@ function drawBoard(board: Board) {
     }
 }
 
+function handleSquareClick(board: Board, row: number, col: number) {
+    const square = board[row][col];
+    const inspector = document.getElementById('square-inspector') as HTMLElement;
+    const squareDisplayJSON = printSquare(square)
+    console.log(squareDisplayJSON)
+    // Using the Class method or Utility function
+    inspector.innerText = squareDisplayJSON; 
+}
+
+function prepareCanvas(canvas: HTMLCanvasElement) {
+    const BOARD_SIZE = 15;
+    
+    canvas.addEventListener('mousedown', (event: MouseEvent) => {
+        console.log("Canvas Clicked")
+        // 1. Get the bounding box of the canvas (accounts for scrolling/layout)
+        const rect = canvas.getBoundingClientRect();
+    
+        // 2. Calculate the "Local" X and Y relative to the canvas top-left
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+    
+        // 3. Divide by cell size and 'Floor' it to get the integer index
+        const cellSize = canvas.width / BOARD_SIZE;
+        
+        const col = Math.floor(mouseX / cellSize);
+        const row = Math.floor(mouseY / cellSize);
+    
+        // 4. Safety Check: Ensure the click wasn't on the border/padding
+        if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+            console.log("Row:", row, "Column:", col)
+            if (globalBoard) {            
+                handleSquareClick(globalBoard, row, col);
+            }
+        }
+    });
+}
+
+
 // This fires for everyone whenever the player list changes
 socket.on('player_list_updated', (data: {'players': string[]}) => {
     updatePlayerSidebar(data.players);

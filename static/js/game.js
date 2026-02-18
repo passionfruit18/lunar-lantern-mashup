@@ -71,6 +71,31 @@ function drawBoard(board) {
         }
     }
 }
+function handleSquareClick(board, row, col) {
+    const square = board[row][col];
+    const inspector = document.getElementById('square-inspector');
+    const squareDisplayJSON = printSquare(square);
+    console.log(squareDisplayJSON);
+    inspector.innerText = squareDisplayJSON;
+}
+function prepareCanvas(canvas) {
+    const BOARD_SIZE = 15;
+    canvas.addEventListener('mousedown', (event) => {
+        console.log("Canvas Clicked");
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        const cellSize = canvas.width / BOARD_SIZE;
+        const col = Math.floor(mouseX / cellSize);
+        const row = Math.floor(mouseY / cellSize);
+        if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+            console.log("Row:", row, "Column:", col);
+            if (globalBoard) {
+                handleSquareClick(globalBoard, row, col);
+            }
+        }
+    });
+}
 socket.on('player_list_updated', (data) => {
     updatePlayerSidebar(data.players);
 });
