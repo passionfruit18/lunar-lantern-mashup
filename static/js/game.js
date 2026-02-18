@@ -37,6 +37,7 @@ function joinGame() {
     const room_code = (_b = document === null || document === void 0 ? void 0 : document.getElementById('session-code')) === null || _b === void 0 ? void 0 : _b.value.toUpperCase();
     if (!username || !room_code)
         return alert("Enter both username and code");
+    console.log("Joining game...");
     socket.emit('join_session', { username: username, room_code: room_code });
 }
 socket.on('session_created', (data) => {

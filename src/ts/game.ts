@@ -1,49 +1,14 @@
-const socket = io();
+import { io } from "socket.io-client";
+import * as BoardModule from "./board";
+import * as PlayerModule from "./player";
 
-enum SquareType {
-    NORMAL = "NORMAL",
-    SPECIAL_TRANSLATION = "SPECIAL_TRANSLATION",
-    DOUBLE_POINT = "DOUBLE_POINT",
-    TRIPLE_POINT = "TRIPLE_POINT"
-}
+export const socket = io();
 
-interface TileData {
-    type: 'english' | 'chinese';
-    display: string;
-    components?: string[];
-    points?: number;
-}
-
-interface SquareData {
-    square_type: SquareType;
-    tile: TileData | null;
-}
-
-const printAllSquareDetails = (square: SquareData): string => {
-    return JSON.stringify(square, null, 2);
-};
-
-const simplePrintSquare = (square: SquareData): string => {
-    if (square.tile) {
-        // TODO: this should be a switch statement on an Enum
-        if (square.tile.type == "english") {
-            return square.tile.display;
-        }
-        else {
-            return square.tile.display;
-        }
-    }
-    else {
-        return ""
-    }
-};
-
-type Board = SquareData[][];
 
 interface SessionData {
     room_code: string;
     username: string;
-    board: Board;    // Uses the Board type defined above
+    board: BoardModule.Board;    // Uses the Board type defined above
 }
 
 let currentRoom = "";
@@ -87,14 +52,14 @@ function enterRoom(room_code: string, username: string) {
 }
 
 // Define the global state
-let globalBoard: Board | null = null;
+let globalBoard: BoardModule.Board | null = null;
 
 // Helper to check if the board is ready
 function isGameReady(): boolean {
     return globalBoard !== null;
 }
 
-function drawBoard(board: Board) {
+function drawBoard(board: BoardModule.Board) {
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     prepareCanvas(canvas)
@@ -109,16 +74,16 @@ function drawBoard(board: Board) {
             if (board && board[r][c]) {
                 ctx.fillStyle = "black";
                 ctx.font = "20px Arial";
-                ctx.fillText(simplePrintSquare(board[r][c]), c * size + 10, r * size + 28);
+                ctx.fillText(BoardModule.simplePrintSquare(board[r][c]), c * size + 10, r * size + 28);
             }
         }
     }
 }
 
-function handleSquareClick(board: Board, row: number, col: number) {
+function handleSquareClick(board: BoardModule.Board, row: number, col: number) {
     const square = board[row][col];
     const inspector = document.getElementById('square-inspector') as HTMLElement;
-    const squareDisplayJSON = printAllSquareDetails(square)
+    const squareDisplayJSON = BoardModule.printAllSquareDetails(square)
     console.log(squareDisplayJSON)
     // Using the Class method or Utility function
     inspector.innerText = squareDisplayJSON; 
@@ -154,16 +119,16 @@ function prepareCanvas(canvas: HTMLCanvasElement) {
 
 
 // This fires for everyone whenever the player list changes
-socket.on('player_list_updated', (data: {'players': string[]}) => {
+socket.on('player_list_updated', (data: {'players': PlayerModule.PlayerData[]}) => {
     updatePlayerSidebar(data.players);
 });
 
-function updatePlayerSidebar(players: string[]) {
+function updatePlayerSidebar(players: PlayerModule.PlayerData[]) {
     const listElement = document.getElementById('player-list') as HTMLElement;
     listElement.innerHTML = ""; // Clear current list
-    players.forEach(name => {
+    players.forEach(player => {
         const li = document.createElement('li');
-        li.innerText = name;
+        li.innerText = PlayerModule.printAllPlayerDetails(player);
         listElement.appendChild(li);
     });
 }
@@ -171,3 +136,8 @@ function updatePlayerSidebar(players: string[]) {
 function leaveGame() {
     location.reload();
 }
+
+// Export functions to window. Maybe better to use Event Listeners later (TODO)
+(window as any).createGame = createGame;
+(window as any).joinGame = joinGame;
+(window as any).leaveGame = leaveGame;
