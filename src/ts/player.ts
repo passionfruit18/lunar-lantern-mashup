@@ -32,3 +32,52 @@ export const printAllPlayerDetails = (player: PlayerData): string => {
     // 3. Stringify the result. The hand strings will now stay on one line!
     return JSON.stringify(displayData, null, 2);
 };
+
+export const printAllPlayerDetailsPretty = (player: PlayerData): string => {
+
+    // 1. Create a shallow copy so we don't mutate the actual player data
+    const displayData = { ...player };
+
+    // 2. Pre-format the hand arrays into strings so JSON.stringify treats them as single lines
+    // This turns ["A", "B", "C"] into "[A, B, C]"
+    (displayData.hand as any) = {
+        chinese: `[ ${displayData.hand.chinese.join(", ")} ]`,
+        english: `[ ${displayData.hand.english.join(", ")} ]`
+    };
+
+    // 3. 
+    return `<div class="player-card">
+            <h3>Username: ${displayData.username}</h3>
+            <dl>
+                <dt>Score</dt>
+                <dd>${displayData.total_score}</dd>
+                <dt>English Hand</dt>
+                <dd>${displayData.hand.english}</dd>
+                <dt>Chinese Hand</dt>
+                <dd>${displayData.hand.chinese}</dd>
+                <dt>Score History</dt>
+                <dd>${displayData.score_history.map(score => prettyPrintScore(score)).join("<hr/>")}</dd>
+            </dl>
+        </div>`
+};
+
+function prettyPrintScore(data: ScoreData): string {
+    const english = data.english_words.length > 0 ? data.english_words.join(', ') : 'None';
+    const chinese = data.chinese_words.length > 0 ? data.chinese_words.join(', ') : 'None';
+
+    return `
+        <div class="score-entry">
+            <div class="score-header">
+                <strong>Turn Score: ${data.final_score}</strong> 
+                <small>(x${data.multiplier} Multiplier)</small>
+            </div>
+            <div class="words-found">
+                <div>🔤 English: <em>${english}</em></div>
+                <div>🏮 Chinese: <em>${chinese}</em></div>
+            </div>
+            <div class="synergy-box">
+                <strong>Synergy (+${data.synergy_score}):</strong> ${data.synergy_explanation}
+            </div>
+        </div>
+    `;
+}
