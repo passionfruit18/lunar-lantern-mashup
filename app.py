@@ -6,13 +6,16 @@ from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
 from models.board import GameBoard
 from models.player import Player
+from models.moves import is_straight_line, get_consistent_language
+from models.tiles import create_tile
+import threading
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hanzi_secret_123'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-testing: bool = True
+testing: bool = False
 
 class Game:
     def __init__(self, room_code: str):
@@ -22,6 +25,7 @@ class Game:
             self.board.initialize_random_tiles()
         self.players: List[Player] = []  # List of (username, session_id) tuples
         self.status = "waiting"
+        self.lock = threading.Lock()
 
     def add_user(self, username: string, session_id: string) -> bool:
         """
@@ -36,6 +40,73 @@ class Game:
     
     def get_player_names(self) -> List[str]:
         return [p.username for p in self.players]
+    
+    def validate_and_apply_move(self, session_id, pending_moves) -> Tuple[bool, str]:
+        # Acquire the lock
+        with self.lock:
+            try:
+
+                # Find player
+                player = self.find_by_session_id(session_id)
+
+                if not player:
+                    return False, f"Player ${session_id} cannot be found"
+                
+                # Check Linearity
+                if not is_straight_line(pending_moves):
+                    return False, "Moves must be in a straight horizontal or vertical line."                
+                
+                # Check consistent language and single Chinese characters and single English characters
+                language_type = get_consistent_language(pending_moves)
+
+                hand = player.hand
+
+                if not hand:
+                    return False, "Hand doesn't exist"
+                
+                pending_move_values = [pending_move["value"] for pending_move in pending_moves if pending_move.get('value')]
+
+                # Check move can be made from hand
+                if not hand.has_required_tiles(pending_move_values, language_type):
+                    return False, f"Hand does not have required values: ${pending_move_values}"
+
+                # Check move can be made on board (empty squares)
+                for pending_move in pending_moves:
+                    row = pending_move['row']
+                    col = pending_move['col']
+                    game_square = self.board.grid[row][col]
+                    if (game_square.tile):
+                        return False, f"Value already exists at row: ${row}, col: ${col}"
+                    
+                # Make the moves!
+                for pending_move in pending_moves:
+                    row = pending_move['row']
+                    col = pending_move['col']
+                    game_square = self.board.grid[row][col]
+                    game_square.tile = create_tile(pending_move['value'])
+
+
+                # Subtract pending_moves from Hand
+                hand.consume_tiles(pending_move_values, language_type)
+
+                # Replenish Hand
+                
+                player.hand.replenish_hand()
+
+                # TODO: Add scoring method (with AI haha) and add Score to player
+
+                return True, "Success"
+            
+            except ValueError as e:
+                return False, str(e)    
+    
+    def find_by_session_id(self, session_id: str) -> Optional[Player]:
+        """
+        Returns the Player object with the matching session_id, 
+        or None if no match is found.
+        """
+        # Using a generator expression (memory efficient)
+        return next((p for p in self.players if p.session_id == session_id), None)
     
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
@@ -113,6 +184,42 @@ def handle_join_session(data):
 
         else:
             emit('error', {'message': 'Room Full'})
+    else:
+        emit('error', {'message': 'Invalid Room Code'})
+
+@socketio.on('submit_move')
+def handle_submit_move(data):
+    """Validates the room code and adds the player to the session."""
+    
+
+    pendingMoves = data.get('pendingMoves')
+    print(f"Pending Moves: ${pendingMoves}")
+    def inner_func(room_code, session_id, game: Game):
+
+        success, message = game.validate_and_apply_move(session_id, pendingMoves)
+        
+        if success:
+
+            emit('update_board', {
+                'board': game.board.to_dict()
+            }, to=room_code)
+            emit('player_list_updated', {
+                'players': [p.to_dict() for p in game.players]
+            }, to=room_code)
+
+        else:
+            emit('error', {'message': message})
+
+    with_room_code_and_session_id_and_game(data, request, inner_func)
+
+
+def with_room_code_and_session_id_and_game(data, request, inner_func):
+    room_code = data.get('room_code')
+    session_id = request.sid
+
+    if room_code in sessions:
+        game: Game = sessions[room_code]
+        inner_func(room_code, session_id, game)
     else:
         emit('error', {'message': 'Invalid Room Code'})
 

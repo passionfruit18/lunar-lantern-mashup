@@ -1,0 +1,36 @@
+.game-container {
+    display: flex;          /* Align children horizontally */
+    align-items: flex-start; /* Align them to the top */
+    gap: 20px;              /* Create a 20px gap between canvas and sidebar */
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+#game-canvas {
+    border: 2px solid #333;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.sidebar {
+    width: 250px;
+    padding: 15px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    min-height: 600px; /* Match canvas height */
+}
+
+#player-list {
+    list-style: none;
+    padding: 0;
+}
+
+#player-list li {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 4px;
+    border-left: 5px solid #007bff; /* Nice blue accent for players */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}

@@ -51,3 +51,33 @@ class ChineseTileGroup:
 
 # Type alias for clarity
 TileType = Union[EnglishTile, ChineseTileGroup]
+
+import re
+from typing import List, Optional, Union
+
+def create_tile(user_input: str) -> Union[EnglishTile, ChineseTileGroup]:
+    """
+    Factory function to return an EnglishTile or ChineseTileGroup 
+    based on the input character.
+    """
+    # Remove whitespace just in case
+    char = user_input.strip()
+    
+    if not char:
+        raise ValueError("Input cannot be empty")
+
+    # Regex for English letters (A-Z, a-z)
+    if re.match(r'^[a-zA-Z]$', char):
+        return EnglishTile(char)
+    
+    # Check if the character is in the Chinese/Radical Unicode blocks
+    # \u4e00-\u9fff: Common CJK Unified Ideographs
+    # \u2f00-\u2fdf: Kangxi Radicals
+    # \u2e80-\u2eff: CJK Radicals Supplement
+    if re.match(r'^[\u4e00-\u9fff\u2f00-\u2fdf\u2e80-\u2eff]$', char):
+        # Even though it's a single char, we initialize it as the first part
+        tileGroup = ChineseTileGroup(parts=[char])
+        tileGroup.combine()
+        return tileGroup
+    
+    raise ValueError(f"Unsupported character: {char}")
