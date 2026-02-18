@@ -99,3 +99,12 @@ class Dictionary:
                 return False, f"'{word_str}' is not a valid word!"
                 
         return True, "Valid Move!"
+    
+    def get_stroke_count(self, char: str) -> int:
+        try:
+            # hanzipy decomposition often includes stroke metadata
+            data = self.hanzi_dict.get_character_in_section(char)
+            # Fallback to a default if metadata is missing
+            return data.get('stroke_count', 5)
+        except:
+            return 5 # Average stroke count fallback
