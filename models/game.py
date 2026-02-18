@@ -136,6 +136,7 @@ class Game:
                 
                 player.hand.replenish_hand()
                 
+                # Chinese-English dual synergy with AI for score multiplier
                 score = self.calculate_score(pending_moves, all_sequences, language_type)
 
                 player.score_history.append(score)                
@@ -155,7 +156,6 @@ class Game:
     
 
     def calculate_score(self, pending_moves: List[PendingMove], all_sequences: List[List[PendingMove]], language_type: LanguageType) -> Score:
-
         """
         Chinese-English dual synergy with AI for score multiplier
         """
