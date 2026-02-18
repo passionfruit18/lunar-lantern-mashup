@@ -2,6 +2,7 @@
 from enum import Enum, auto
 from typing import List, Optional, Union
 from .tiles import EnglishTile, ChineseTileGroup, TileType  # Local import
+import random
 
 class SquareType(Enum):
     NORMAL = auto()
@@ -55,3 +56,26 @@ class GameBoard:
             [square.to_dict() for square in row] 
             for row in self.grid
         ]
+    
+    def initialize_random_tiles(self):
+        """
+        Populates every square on the 15x15 board with 
+        either an EnglishTile or a ChineseTileGroup.
+        """
+        english_pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        # Common radicals for testing
+        radical_pool = ["氵", "口", "人", "木", "手", "火", "土", "竹"]
+
+        for row in range(self.size):
+            for col in range(self.size):
+                # 50/50 chance between English and Chinese
+                if random.random() > 0.5:
+                    char = random.choice(english_pool)
+                    self.grid[row][col].tile = EnglishTile(char)
+                else:
+                    # Create a group with 1 to 3 random radicals
+                    count = random.randint(1, 3)
+                    parts = [random.choice(radical_pool) for _ in range(count)]
+                    group = ChineseTileGroup(parts)
+                    group.combine() # Set the actualized_char
+                    self.grid[row][col].tile = group

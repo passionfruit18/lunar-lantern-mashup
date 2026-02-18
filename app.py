@@ -11,10 +11,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hanzi_secret_123'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+testing: bool = True
+
 class Game:
     def __init__(self, room_code: str):
         self.room_code: str = room_code
         self.board: GameBoard = GameBoard()
+        if (testing):
+            self.board.initialize_random_tiles()
         self.players: List[Tuple[str, str]] = []  # List of (username, session_id) tuples
         self.status = "waiting"
 
