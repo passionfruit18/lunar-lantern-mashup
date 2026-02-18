@@ -88,7 +88,7 @@ class Game:
                     if (game_square.tile):
                         return False, f"Value already exists at row: ${row}, col: ${col}"
                     
-                # TODO: Check that the pending moves, PLUS THE WORDS THEY TOUCH is a valid word in dictionary (English OR Chinese)
+                # TODO: Check that the pending moves, PLUS THE WORDS THEY TOUCH are valid words in dictionary (English OR Chinese)
                 # This is going to be tricky. A lot of stuff in GameBoard
                 """
                 GAME RULES
@@ -159,8 +159,7 @@ class Game:
                 else:
                     raise ValueError(f"Unsupported language type: {language_type}")
                 
-                player.score_history.append(score)
-                # TODO: Add basic scoring method and add Score to player with dictionary
+                player.score_history.append(score)                
                 # TODO: Add Chinese-English dual synergy with AI for score multiplier
 
                 return True, "Success"
