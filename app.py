@@ -4,10 +4,11 @@ import string
 from flask import Flask, render_template, request, session
 from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
-from models.board import GameBoard
+from models.board import GameBoard, BOARD_SIZE
 from models.player import Player
-from models.moves import is_straight_line, get_consistent_language
+from models.moves import is_straight_line, get_consistent_language, PendingMove
 from models.tiles import create_tile
+from models.dictionary import Dictionary
 import threading
 
 # --- CONFIGURATION & GLOBALS ---
@@ -163,7 +164,7 @@ def generate_session_code(length=5):
 def create_new_game():
     """Initializes the state for a new game session."""
     return {
-        "board": [["" for _ in range(15)] for _ in range(15)],
+        "board": [["" for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)],
         "players": {},
         "turn": None,
         "status": "waiting"

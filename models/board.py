@@ -1,9 +1,13 @@
 
 from enum import Enum, auto
 from typing import List, Optional, Union
-from .tiles import EnglishTile, ChineseTileGroup, TileType  # Local import
+from .tiles import EnglishTile, ChineseTileGroup, TileType, LanguageType  # Local import
 from .chinese_chars import selectRandomChineseCharacter
+from .moves import PendingMove
+from .dictionary import Dictionary
 import random
+
+BOARD_SIZE = 15;
 
 class SquareType(Enum):
     NORMAL = auto()
@@ -26,7 +30,7 @@ class GameSquare:
         }
 
 class GameBoard:
-    def __init__(self, size: int = 15):
+    def __init__(self, size: int = BOARD_SIZE):
         self.size = size
         # Generating a 2D grid of GameSquare objects
         self.grid: List[List[GameSquare]] = [
