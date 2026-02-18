@@ -41,36 +41,64 @@ class Game:
     def get_player_names(self) -> List[str]:
         return [p.username for p in self.players]
     
-    def validate_and_apply_move(self, session_id, pending_moves) -> Tuple[str, str]:
-        # 1. Acquire the lock
+    def validate_and_apply_move(self, session_id, pending_moves) -> Tuple[bool, str]:
+        # Acquire the lock
         with self.lock:
-            # 2. Check Linearity
-            if not is_straight_line(pending_moves):
-                return False, "Moves must be in a straight horizontal or vertical line."
-            
-            # TODO: Check all characters are either English or Chinese
+            try:
 
-            # TODO: Make sure spots to be filled are empty!
-            # This was kind of checked on the front end as well but just to make sure
+                # Find player
+                player = self.find_by_session_id(session_id)
+
+                if not player:
+                    return False, f"Player ${session_id} cannot be found"
+                
+                # Check Linearity
+                if not is_straight_line(pending_moves):
+                    return False, "Moves must be in a straight horizontal or vertical line."                
+                
+                # Check consistent language and single Chinese characters and single English characters
+                language_type = get_consistent_language(pending_moves)
+
+                hand = player.hand
+
+                if not hand:
+                    return False, "Hand doesn't exist"
+                
+                pending_move_values = [pending_move["value"] for pending_move in pending_moves if pending_move.get('value')]
+
+                # Check move can be made from hand
+                if not hand.has_required_tiles(pending_move_values, language_type):
+                    return False, f"Hand does not have required values: ${pending_move_values}"
+
+                # Check move can be made on board (empty squares)
+                for pending_move in pending_moves:
+                    row = pending_move['row']
+                    col = pending_move['col']
+                    game_square = self.board.grid[row][col]
+                    if (game_square.tile):
+                        return False, f"Value already exists at row: ${row}, col: ${col}"
                     
+                # Make the moves!
+                for pending_move in pending_moves:
+                    row = pending_move['row']
+                    col = pending_move['col']
+                    game_square = self.board.grid[row][col]
+                    game_square.tile = create_tile(pending_move['value'])
 
-            # TODO: Make sure pending_moves can be made from Hand
 
-            # 3. Apply to board
-            for m in pending_moves:
-                self.board.grid[m['row']][m['col']].tile = create_tile(m['value'])
+                # Subtract pending_moves from Hand
+                hand.consume_tiles(pending_move_values, language_type)
 
-
-            # TODO: Subtract pending_moves from Hand
-
-            # 4. Replenish Hand
-            player = self.find_by_session_id(session_id)
-            if player:
+                # Replenish Hand
+                
                 player.hand.replenish_hand()
 
-            # TODO: Add scoring method (with AI haha) and add Score to player
+                # TODO: Add scoring method (with AI haha) and add Score to player
 
-            return True, "Success"
+                return True, "Success"
+            
+            except ValueError as e:
+                return False, str(e)    
     
     def find_by_session_id(self, session_id: str) -> Optional[Player]:
         """
@@ -165,6 +193,7 @@ def handle_submit_move(data):
     
 
     pendingMoves = data.get('pendingMoves')
+    print(f"Pending Moves: ${pendingMoves}")
     def inner_func(room_code, session_id, game: Game):
 
         success, message = game.validate_and_apply_move(session_id, pendingMoves)
