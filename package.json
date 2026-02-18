@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/ts/game.ts --bundle --minify --sourcemap --outfile=static/js/bundle.js",
+    "dev": "esbuild src/ts/game.ts --bundle --sourcemap --outfile=static/js/bundle.js --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/socket.io-client": "^1.4.36",
+    "esbuild": "^0.27.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.3"
   }
 }
