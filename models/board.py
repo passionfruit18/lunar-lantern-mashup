@@ -2,6 +2,7 @@
 from enum import Enum, auto
 from typing import List, Optional, Union
 from .tiles import EnglishTile, ChineseTileGroup, TileType  # Local import
+from .chinese_chars import selectRandomChineseCharacter
 import random
 
 class SquareType(Enum):
@@ -74,8 +75,11 @@ class GameBoard:
                     self.grid[row][col].tile = EnglishTile(char)
                 else:
                     # Create a group with 1 to 3 random radicals
-                    count = random.randint(1, 3)
-                    parts = [random.choice(radical_pool) for _ in range(count)]
+                    # count = random.randint(1, 3)
+                    # For testing, count = 1
+                    # TODO: Switch this back when I have the logic for combining tiles
+                    count = 1
+                    parts = [selectRandomChineseCharacter()]
                     group = ChineseTileGroup(parts)
                     group.combine() # Set the actualized_char
                     self.grid[row][col].tile = group
