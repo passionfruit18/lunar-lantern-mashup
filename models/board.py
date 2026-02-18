@@ -64,8 +64,6 @@ class GameBoard:
         either an EnglishTile or a ChineseTileGroup.
         """
         english_pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        # Common radicals for testing
-        radical_pool = ["氵", "口", "人", "木", "手", "火", "土", "竹"]
 
         for row in range(self.size):
             for col in range(self.size):
