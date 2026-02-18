@@ -206,20 +206,62 @@ class GameBoard:
         Finds existing words on the board that are adjacent to the newly placed word
         but belong to the DIFFERENT language category.
         """
+        if not new_word_moves:
+            return []
+        
         adjacent_context = []
+        is_horizontal = all(m.row == new_word_moves[0].row for m in new_word_moves)
+        # Check UP & DOWN if is_horizontal (row -1, +1) else LEFT & RIGHT (col -1, +1)
+        check_dirs = [(-1, 0), (1, 0)] if is_horizontal else [(0, -1), (0, 1)]
+
+        # If it's a single tile move, check all 4 directions
+        if len(new_word_moves) == 1:
+            check_dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+        seen_words = set() # Prevent duplicate synergies if a word touches multiple tiles
+
         for move in new_word_moves:
             # Check North, South, East, West for existing tiles
-            for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+            for dr, dc in check_dirs:
                 r, c = move.row + dr, move.col + dc
                 if 0 <= r < 15 and 0 <= c < 15:
-                    neighbor = self.grid[r][c].tile
-                    if neighbor and neighbor.type != move.type:
-                        adjacent_context.append({
-                            "original": move.value,
-                            "neighbor": neighbor.show(),
-                            "context": f"Placed {move.value} next to {neighbor.show()}"
-                        })
+                    neighbor_tile = self.grid[r][c].tile
+                    if neighbor_tile and neighbor_tile.type != move.type:
+
+                        # 2. Expand the neighbor into a full word
+                        # If we checked N/S, the neighbor word must be Horizontal (and vice versa)
+                        # TODO: Or really? What about case of len(new_word_moves) == 1?
+                        # Maybe we need the complement of directions.
+                        neighbor_axis = "H" if dr != 0 else "V"
+                        full_word = self._expand_word(r, c, neighbor_axis)
+
+                        if full_word and full_word not in seen_words:
+                            seen_words.add(full_word)
+                            adjacent_context.append({
+                                "new_word": "".join([m.value for m in new_word_moves]),
+                                "neighbor": full_word,
+                                "context": f"Synergy between {move.type} '{move.value}' and {neighbor_tile.type} '{full_word}'"
+                            })
                         # TODO: Need to go in the perpendicular direction to new_word_moves, and also "expand" the other-language word
         print_adj = ', '.join([ctx["neighbor"] for ctx in adjacent_context])
         print(f"Adjacent Words: {print_adj}")
         return adjacent_context
+    
+    def _expand_word(self, r, c, axis):
+        """Helper to walk the grid and return a full string of tiles."""
+        word_tiles = []
+        dr, dc = (0, 1) if axis == "H" else (1, 0)
+        
+        # Walk to the start (Left or Up)
+        curr_r, curr_c = r, c
+        while 0 <= curr_r - dr < 15 and 0 <= curr_c - dc < 15 and self.grid[curr_r - dr][curr_c - dc].tile:
+            curr_r -= dr
+            curr_c -= dc
+            
+        # Walk to the end and collect
+        while 0 <= curr_r < 15 and 0 <= curr_c < 15 and self.grid[curr_r][curr_c].tile:
+            word_tiles.append(self.grid[curr_r][curr_c].tile.show())
+            curr_r += dr
+            curr_c += dc
+            
+        return "".join(word_tiles)
