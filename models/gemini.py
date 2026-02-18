@@ -39,10 +39,9 @@ class SynergyEngine:
         prompt = f"""
         Analyze the relationship between the English words '{", ".join(english_words)}' 
         and the Chinese words '{", ".join(chinese_words)}'.
-        If there is at least one connection, highlight that.
         Return a JSON object with:
         1. 'synergy_score': (0-10) based on semantic or poetic connection.
-        2. 'synergy_explanation': A medium length, witty 1-sentence explanation in English and Chinese.
+        2. 'synergy_explanation': A short, witty 1-sentence explanation in English interspersed with some Chinese characters.
         
         Example: 'Fire' and '水' (Water) = Score 8, "A classic elemental clash!"
         """
