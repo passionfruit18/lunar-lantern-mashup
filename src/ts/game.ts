@@ -27,13 +27,20 @@ function joinGame() {
     socket.emit('join_session', { username: username, room_code: room_code });
 }
 
+// Expected after createGame()
 socket.on('session_created', (data: SessionData) => {
     enterRoom(data.room_code, data.username);
     drawBoard(data.board);
 });
 
+// Expected after joinGame()
 socket.on('join_success', (data: SessionData) => {
     enterRoom(data.room_code, data.username);
+    drawBoard(data.board);
+});
+
+// Expected after moves made
+socket.on('update_board', (data: SessionData) => {
     drawBoard(data.board);
 });
 
@@ -206,3 +213,4 @@ function leaveGame() {
 (window as any).createGame = createGame;
 (window as any).joinGame = joinGame;
 (window as any).leaveGame = leaveGame;
+(window as any).submitMove = submitMove;
