@@ -1,6 +1,12 @@
 
 from typing import List, Optional, Union
 
+from enum import Enum
+
+class LanguageType(str, Enum):
+    ENGLISH = "ENGLISH"
+    CHINESE = "CHINESE"
+
 class EnglishTile:
     def __init__(self, char: str):
         self.char = char.upper()
@@ -8,7 +14,7 @@ class EnglishTile:
 
     def to_dict(self):
         return {
-            "type": "english",
+            "type": LanguageType.ENGLISH,
             "display": self.char,
             "points": self.points
         }
@@ -38,7 +44,7 @@ class ChineseTileGroup:
     
     def to_dict(self):
         return {
-            "type": "chinese",
+            "type": LanguageType.CHINESE,
             "display": self.actualized_char,
             "components": self.parts
         }
