@@ -1,5 +1,6 @@
 # Ignore compiled JavaScript from TypeScript
 static/js/game.js
+static/js/bundle.*
 
 # Ignore TypeScript build info
 *.tsbuildinfo
