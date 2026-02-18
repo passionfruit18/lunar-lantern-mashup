@@ -233,7 +233,7 @@ class GameBoard:
                         # TODO: Or really? What about case of len(new_word_moves) == 1?
                         # Maybe we need the complement of directions.
                         neighbor_axis = "H" if dr != 0 else "V"
-                        full_word = self._expand_word(r, c, neighbor_axis)
+                        full_word = self._expand_word(r, c, neighbor_axis, neighbor_tile.type)
 
                         if full_word and full_word not in seen_words:
                             seen_words.add(full_word)
@@ -247,19 +247,23 @@ class GameBoard:
         print(f"Adjacent Words: {print_adj}")
         return adjacent_context
     
-    def _expand_word(self, r, c, axis):
-        """Helper to walk the grid and return a full string of tiles."""
+    def _expand_word(self, r, c, axis, tile_type: LanguageType):
+        """Helper to walk the grid and return a full string of tiles of the same Language Type."""
         word_tiles = []
         dr, dc = (0, 1) if axis == "H" else (1, 0)
         
         # Walk to the start (Left or Up)
         curr_r, curr_c = r, c
-        while 0 <= curr_r - dr < 15 and 0 <= curr_c - dc < 15 and self.grid[curr_r - dr][curr_c - dc].tile:
+        while (0 <= curr_r - dr < 15 and 0 <= curr_c - dc < 15 
+               and self.grid[curr_r - dr][curr_c - dc].tile
+               and self.grid[curr_r - dr][curr_c - dc].tile.type == tile_type):
             curr_r -= dr
             curr_c -= dc
             
         # Walk to the end and collect
-        while 0 <= curr_r < 15 and 0 <= curr_c < 15 and self.grid[curr_r][curr_c].tile:
+        while (0 <= curr_r < 15 and 0 <= curr_c < 15
+               and self.grid[curr_r][curr_c].tile
+               and self.grid[curr_r][curr_c].tile.type == tile_type):
             word_tiles.append(self.grid[curr_r][curr_c].tile.show())
             curr_r += dr
             curr_c += dc
