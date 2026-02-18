@@ -1,3 +1,5 @@
+import { LanguageType } from "./board";
+
 export interface ScoreData {
     english_words: string[];
     chinese_words: string[];
@@ -5,6 +7,7 @@ export interface ScoreData {
     synergy_explanation: string;
     multiplier: number;
     final_score: number;
+    move_language: LanguageType;
 }
 
 export interface PlayerData {
@@ -69,11 +72,11 @@ function prettyPrintScore(data: ScoreData): string {
         <div class="score-entry">
             <div class="score-header">
                 <strong>Turn Score: ${data.final_score}</strong> 
-                <small>(x${data.multiplier} Multiplier)</small>
+                <small>(x${data.multiplier} Multiplier) [Language: ${data.move_language}]</small>
             </div>
             <div class="words-found">
-                <div>🔤 English: <em>${english}</em></div>
-                <div>🏮 Chinese: <em>${chinese}</em></div>
+                <div>🔤 English Words: <em>${english}</em></div>
+                <div>🏮 Chinese Words: <em>${chinese}</em></div>
             </div>
             <div class="synergy-box">
                 <strong>Synergy (+${data.synergy_score}):</strong> ${data.synergy_explanation}
