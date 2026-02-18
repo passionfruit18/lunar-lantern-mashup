@@ -29,9 +29,6 @@ class Dictionary:
         from nltk.corpus import words
 
         self.english_words.update(set(w.lower() for w in words.words()))
-        # Placeholder for your actual file loading logic
-        # Example: with open('en_words.txt') as f: ...
-        # TODO: Add Chinese Dictionary Corpus
         self.hanzi_dict = HanziDictionary()
         print(f"--- Dictionary Loaded: {len(self.english_words)} EN words, ?? Chinese ---")
 
