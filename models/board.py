@@ -220,4 +220,6 @@ class GameBoard:
                             "context": f"Placed {move.value} next to {neighbor.show()}"
                         })
                         # TODO: Need to go in the perpendicular direction to new_word_moves, and also "expand" the other-language word
+        print_adj = ', '.join([ctx["neighbor"] for ctx in adjacent_context])
+        print(f"Adjacent Words: {print_adj}")
         return adjacent_context
