@@ -248,7 +248,7 @@ function updatePlayerSidebar(players: PlayerModule.PlayerData[]) {
     listElement.innerHTML = ""; // Clear current list
     players.forEach(player => {
         const li = document.createElement('li');
-        li.innerText = PlayerModule.printAllPlayerDetails(player);
+        li.innerHTML = PlayerModule.printAllPlayerDetailsPretty(player);
         listElement.appendChild(li);
     });
 }
