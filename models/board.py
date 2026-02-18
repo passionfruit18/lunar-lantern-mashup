@@ -190,9 +190,14 @@ class GameBoard:
                 if (len(cross_word) > 1):
                     all_sequences.append(cross_word)
 
-        valid_sequences = [seq for seq in all_sequences if len(seq) > 1]
+        if main_lang == LanguageType.ENGLISH:
+            valid_sequences = [seq for seq in all_sequences if len(seq) > 1]
+        elif main_lang == LanguageType.CHINESE:
+            valid_sequences = all_sequences
+        else:
+            raise ValueError(f"Unsupported language type: {main_lang}")
 
         valid_sequences_print = ", ".join(["".join([m.value for m in moves]) for moves in valid_sequences])
-        print(f"All Valid Sequences: ${valid_sequences_print}")
+        print(f"All Valid Sequences: {valid_sequences_print}")
         return valid_sequences
     
