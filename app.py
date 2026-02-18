@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
 from models.board import GameBoard, BOARD_SIZE
 from models.player import Player, Score
-from models.moves import is_straight_line, get_consistent_language, PendingMove
+from models.moves import is_straight_line, get_consistent_language, PendingMove, deduplicate_moves
 from models.tiles import create_tile, LanguageType
 from models.dictionary import Dictionary
 from models.english import score_english_word
@@ -56,6 +56,9 @@ class Game:
                 if not player:
                     return False, f"Player ${session_id} cannot be found"
                 
+                # Remove position-duplicates i.e. two letters in the same position
+                pending_moves = deduplicate_moves(pending_moves)
+
                 # Check Linearity
                 if not is_straight_line(pending_moves):
                     return False, "Moves must be in a straight horizontal or vertical line."                
@@ -63,7 +66,7 @@ class Game:
                 # Check consistent language and single Chinese characters and single English characters
                 language_type: LanguageType = get_consistent_language(pending_moves)
 
-                # TODO: Remove position-duplicates i.e. two letters in the same position
+                
 
                 hand = player.hand
 

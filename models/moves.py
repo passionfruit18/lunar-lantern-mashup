@@ -63,3 +63,14 @@ def get_consistent_language(pending_moves: List[PendingMove]) -> LanguageType:
     # Return the single language present in the set
     return detected_langs.pop()
 
+# Remove position-duplicates i.e. two letters in the same position
+def deduplicate_moves(pending_moves: List[PendingMove]) -> List[PendingMove]:
+    """
+    Ensures only one tile exists per (row, col) coordinate.
+    If duplicates exist, the last one in the list wins.
+    """
+    # Create a mapping of (row, col) -> PendingMove
+    unique_moves = { (m.row, m.col): m for m in pending_moves }
+    
+    # Convert back to a list
+    return list(unique_moves.values())
