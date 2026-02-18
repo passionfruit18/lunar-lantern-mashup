@@ -91,6 +91,7 @@ class Game:
                         return False, f"Value already exists at row: ${row}, col: ${col}"
                     
                 # TODO: Check that the pending moves, PLUS THE WORDS THEY TOUCH are valid words in dictionary (English OR Chinese)
+                # Still need to implement the bridge moves (see board.py) and "English as Chinese"/"Chinese as English"
                 # This is going to be tricky. A lot of stuff in GameBoard
                 """
                 GAME RULES

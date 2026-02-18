@@ -138,7 +138,7 @@ class GameBoard:
         existing words in the direction (horizontal/vertical) of the move
         AND perpendicular (cross-axis) to the direction of the move
         TODO: If the pending_moves is NOT contiguous, it should have a space of one character
-        which is filled in by existing characters.
+        which is filled in by existing characters. (Bridge moves)
         """
         if not pending_moves :
             return []
