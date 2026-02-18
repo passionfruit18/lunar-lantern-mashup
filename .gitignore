@@ -9,3 +9,5 @@ static/js/bundle.*
 node_modules/**
 
 **/__pycache__/**
+
+.env
