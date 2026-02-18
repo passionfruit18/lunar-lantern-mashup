@@ -159,6 +159,41 @@ def handle_join_session(data):
     else:
         emit('error', {'message': 'Invalid Room Code'})
 
+@socketio.on('submit_move')
+def handle_submit_move(data):
+    """Validates the room code and adds the player to the session."""
+    
+
+    pendingMoves = data.get('pendingMoves')
+    def inner_func(room_code, session_id, game: Game):
+
+        success, message = game.validate_and_apply_move(session_id, pendingMoves)
+        
+        if success:
+
+            emit('update_board', {
+                'board': game.board.to_dict()
+            }, to=room_code)
+            emit('player_list_updated', {
+                'players': [p.to_dict() for p in game.players]
+            }, to=room_code)
+
+        else:
+            emit('error', {'message': message})
+
+    with_room_code_and_session_id_and_game(data, request, inner_func)
+
+
+def with_room_code_and_session_id_and_game(data, request, inner_func):
+    room_code = data.get('room_code')
+    session_id = request.sid
+
+    if room_code in sessions:
+        game: Game = sessions[room_code]
+        inner_func(room_code, session_id, game)
+    else:
+        emit('error', {'message': 'Invalid Room Code'})
+
 # --- EXECUTION ---
 
 if __name__ == '__main__':
