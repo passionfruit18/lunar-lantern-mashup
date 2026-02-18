@@ -68,8 +68,23 @@ function prettyPrintScore(data: ScoreData): string {
     const english = data.english_words.length > 0 ? data.english_words.join(', ') : 'None';
     const chinese = data.chinese_words.length > 0 ? data.chinese_words.join(', ') : 'None';
 
+    // Calculate "Pizzazz" levels
+    const synergy_score = data.synergy_score;
+    let auraStyle = "";
+    
+    if (synergy_score >= 7) {
+        // Increases intensity from 7.0 to 10.0
+        const intensity = (synergy_score - 6) * 4; 
+        const opacity = Math.min((synergy_score - 6) * 0.2, 0.8);
+        auraStyle = `
+            border: ${synergy_score/4}px solid rgba(168, 85, 247, ${opacity});
+            box-shadow: 0 0 ${intensity}px rgba(168, 85, 247, ${opacity / 2});
+            background: linear-gradient(to right, rgba(168, 85, 247, 0.05), transparent);
+        `;
+    }
+
     return `
-        <div class="score-entry">
+        <div class="score-entry" style="${auraStyle}">
             <div class="score-header">
                 <strong>Turn Score: ${data.final_score}</strong> 
                 <small>(x${data.multiplier} Multiplier) [Language: ${data.move_language}]</small>
