@@ -58,6 +58,12 @@ class Game:
                 if not player:
                     return False, f"Player ${session_id} cannot be found"
                 
+                # Check hand exists
+                hand = player.hand
+
+                if not hand:
+                    return False, "Hand doesn't exist"
+                
                 # Remove position-duplicates i.e. two letters in the same position
                 pending_moves = deduplicate_moves(pending_moves)
 
@@ -66,14 +72,8 @@ class Game:
                     return False, "Moves must be in a straight horizontal or vertical line."                
                 
                 # Check consistent language and single Chinese characters and single English characters
-                language_type: LanguageType = get_consistent_language(pending_moves)
-
-                
-
-                hand = player.hand
-
-                if not hand:
-                    return False, "Hand doesn't exist"
+                # TODO: Should we sort according to position here as well?
+                language_type: LanguageType = get_consistent_language(pending_moves)                
                 
                 # Normalise English to Upper
                 pending_move_values = [pending_move.value.upper() for pending_move in pending_moves if pending_move.value]
