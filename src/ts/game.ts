@@ -59,26 +59,56 @@ function isGameReady(): boolean {
     return globalBoard !== null;
 }
 
+// Draw the board!
 function drawBoard(board: BoardModule.Board) {
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     prepareCanvas(canvas)
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     const size = 40; // square size
+    const lengthBoard = 15 // length of board
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let r = 0; r < 15; r++) {
-        for (let c = 0; c < 15; c++) {
+    for (let r = 0; r < lengthBoard; r++) {
+        for (let c = 0; c < lengthBoard; c++) {
+            const x = c * size
+            const y = r * size
             ctx.strokeStyle = "#ccc";
-            ctx.strokeRect(c * size, r * size, size, size);
-            if (board && board[r][c]) {
+            ctx.strokeRect(x, y, size, size);
+            if (board && board[r][c] && board[r][c].tile) {
                 ctx.fillStyle = "black";
                 ctx.font = "20px Arial";
-                ctx.fillText(BoardModule.simplePrintSquare(board[r][c]), c * size + 10, r * size + 28);
+                ctx.fillText(BoardModule.simplePrintSquare(board[r][c]), x + 10, y + 28);
+            }
+            else {
+                const pending = pendingMoves.find(m => m.row === r && m.col === c);
+                if (pending) {
+                    // Draw with a different style to indicate it's not submitted
+                    ctx.fillStyle = "rgba(0, 102, 204, 0.7)"; // Translucent Blue
+                    ctx.font = "bold 20px Arial";
+                    
+                    // Center the text slightly differently if you like
+                    ctx.fillText(pending.value, x + 10, y + 28);
+                    
+                    // Optional: Draw a small border around pending tiles
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#0066cc";
+                    ctx.strokeRect(x + 2, y + 2, size - 4, size - 4);
+                    ctx.lineWidth = 1; // Reset line width
+                }
             }
         }
     }
 }
+
+type PendingMove = {
+    row: number,
+    col: number,
+    type: BoardModule.LanguageType,
+    value: string }
+
+let pendingMoves: PendingMove[] = [];
+
 
 function handleSquareClick(board: BoardModule.Board, row: number, col: number) {
     const square = board[row][col];
@@ -87,6 +117,41 @@ function handleSquareClick(board: BoardModule.Board, row: number, col: number) {
     console.log(squareDisplayJSON)
     // Using the Class method or Utility function
     inspector.innerText = squareDisplayJSON; 
+
+    handleSquareClickEnterChar(board, row, col)
+}
+
+function handleSquareClickEnterChar(board: BoardModule.Board, row: number, col: number) {
+    if (board[row][col].tile !== null) return; // Square occupied
+
+    // Simple UI prompt for now
+    const choice = prompt("Enter 'e' for English or 'c' for Chinese tile from your hand:");
+    if (!choice) return;
+
+    const value = prompt("Enter the specific character/letter:");
+    
+    if (value) {
+        pendingMoves.push({ 
+            row, col,
+            type: choice === 'e' ?
+            BoardModule.LanguageType.ENGLISH :
+            BoardModule.LanguageType.CHINESE,
+            value });
+        // Add to pending (and visually update your local canvas)
+        renderPendingMove(row, col, value); 
+    }
+    
+}
+
+function renderPendingMove(row: number, col: number, value: string) {
+    if (globalBoard) {
+        drawBoard(globalBoard)
+    }
+}
+
+function submitMove() {
+    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom });
+    pendingMoves = []; // Clear for next turn
 }
 
 function prepareCanvas(canvas: HTMLCanvasElement) {
