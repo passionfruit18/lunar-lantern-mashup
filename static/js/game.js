@@ -7,8 +7,21 @@ var SquareType;
     SquareType["DOUBLE_POINT"] = "DOUBLE_POINT";
     SquareType["TRIPLE_POINT"] = "TRIPLE_POINT";
 })(SquareType || (SquareType = {}));
-const printSquare = (square) => {
+const printAllSquareDetails = (square) => {
     return JSON.stringify(square, null, 2);
+};
+const simplePrintSquare = (square) => {
+    if (square.tile) {
+        if (square.tile.type == "english") {
+            return square.tile.display;
+        }
+        else {
+            return square.tile.display;
+        }
+    }
+    else {
+        return "";
+    }
 };
 let currentRoom = "";
 function createGame() {
@@ -66,7 +79,7 @@ function drawBoard(board) {
             if (board && board[r][c]) {
                 ctx.fillStyle = "black";
                 ctx.font = "20px Arial";
-                ctx.fillText(printSquare(board[r][c]), c * size + 10, r * size + 28);
+                ctx.fillText(simplePrintSquare(board[r][c]), c * size + 10, r * size + 28);
             }
         }
     }
@@ -74,7 +87,7 @@ function drawBoard(board) {
 function handleSquareClick(board, row, col) {
     const square = board[row][col];
     const inspector = document.getElementById('square-inspector');
-    const squareDisplayJSON = printSquare(square);
+    const squareDisplayJSON = printAllSquareDetails(square);
     console.log(squareDisplayJSON);
     inspector.innerText = squareDisplayJSON;
 }

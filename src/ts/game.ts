@@ -19,8 +19,23 @@ interface SquareData {
     tile: TileData | null;
 }
 
-const printSquare = (square: SquareData): string => {
+const printAllSquareDetails = (square: SquareData): string => {
     return JSON.stringify(square, null, 2);
+};
+
+const simplePrintSquare = (square: SquareData): string => {
+    if (square.tile) {
+        // TODO: this should be a switch statement on an Enum
+        if (square.tile.type == "english") {
+            return square.tile.display;
+        }
+        else {
+            return square.tile.display;
+        }
+    }
+    else {
+        return ""
+    }
 };
 
 type Board = SquareData[][];
@@ -93,7 +108,7 @@ function drawBoard(board: Board) {
             if (board && board[r][c]) {
                 ctx.fillStyle = "black";
                 ctx.font = "20px Arial";
-                ctx.fillText(printSquare(board[r][c]), c * size + 10, r * size + 28);
+                ctx.fillText(simplePrintSquare(board[r][c]), c * size + 10, r * size + 28);
             }
         }
     }
@@ -102,7 +117,7 @@ function drawBoard(board: Board) {
 function handleSquareClick(board: Board, row: number, col: number) {
     const square = board[row][col];
     const inspector = document.getElementById('square-inspector') as HTMLElement;
-    const squareDisplayJSON = printSquare(square)
+    const squareDisplayJSON = printAllSquareDetails(square)
     console.log(squareDisplayJSON)
     // Using the Class method or Utility function
     inspector.innerText = squareDisplayJSON; 
