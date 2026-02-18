@@ -65,21 +65,49 @@ RARE_CHARACTERS_2 = [
     "运", "灵", "蕴", "粹", "雅", "颂", "赋", "韵", "律", "极"
 ]
 
-BASIC_CHARACTERS_LIST = [BASIC_CHARACTERS, BASIC_CHARACTERS_2]
-MEDIUM_CHARACTERS_LIST = [MEDIUM_CHARACTERS, MEDIUM_CHARACTERS_2]
-RARE_CHARACTERS_LIST = [RARE_CHARACTERS, RARE_CHARACTERS_2]
+TECH_BASIC_CHARACTERS = [
+    "电", "子", "数", "据", "网", "络", "算", "法", "信", "息", 
+    "机", "器", "人", "智", "能", "芯", "片", "云", "端", "端", 
+    "用", "户", "手", "机", "端", "开", "关", "输", "入", "出", 
+    "库", "存", "文", "件", "码", "量", "化", "流", "度", "通", 
+    "位", "元", "自", "动", "化", "点", "击", "搜", "索", "频", 
+    "屏", "幕", "显", "示", "存", "储", "内", "存", "硬", "盘", 
+    "路", "由", "连", "接", "发", "送", "接", "收", "传", "输", 
+    "下", "载", "上", "传", "安", "全", "防", "护", "密", "码", 
+    "工", "具", "应", "用", "软", "件", "系", "统", "核", "心"
+]
+
+TECH_MEDIUM_CHARACTERS = [
+    "视", "频", "音", "频", "图", "像", "模", "拟", "数", "字", 
+    "控", "制", "指", "令", "编", "程", "源", "代", "码", "虚", 
+    "拟", "现", "实", "增", "强", "跨", "界", "交", "互", "界", 
+    "面", "驱", "动", "扩", "展", "集", "成", "端", "口", "信", 
+    "号", "基", "站", "感", "应"
+]
+
+TECH_RARE_CHARACTERS = [
+    "巅", "覆", "隧", "链", "熵", "阈", "耦", "辖", "矩", "阵", 
+    "晶", "硅", "磁", "量子", "瞬"
+]
+# Note: '量子' is technically two characters, but in a tech theme, 
+# '量' and '子' are in Basic. If you need single-character 'Rare':
+# ["巅", "覆", "隧", "链", "熵", "阈", "耦", "辖", "矩", "阵", "晶", "硅", "磁", "玄", "核"]
+
+BASIC_CHARACTERS_LIST = [BASIC_CHARACTERS, BASIC_CHARACTERS_2, TECH_BASIC_CHARACTERS]
+MEDIUM_CHARACTERS_LIST = [MEDIUM_CHARACTERS, MEDIUM_CHARACTERS_2, TECH_MEDIUM_CHARACTERS]
+RARE_CHARACTERS_LIST = [RARE_CHARACTERS, RARE_CHARACTERS_2, TECH_RARE_CHARACTERS]
 
 
 def selectRandomChineseCharacter():
     # Weighted choice based on your distribution
-    which_set = 1
+    which_set = 3 # Choice of set (1-indexed)
     roll = random.random()
     if roll < 0.60:
-        char = random.choice(BASIC_CHARACTERS_LIST[which_set])
+        char = random.choice(BASIC_CHARACTERS_LIST[which_set - 1])
     elif roll < 0.90:
-        char = random.choice(MEDIUM_CHARACTERS_LIST[which_set])
+        char = random.choice(MEDIUM_CHARACTERS_LIST[which_set - 1])
     else:
-        char = random.choice(RARE_CHARACTERS_LIST[which_set])
+        char = random.choice(RARE_CHARACTERS_LIST[which_set - 1])
     return char
 
 def score_chinese_word(word: str) -> int:
