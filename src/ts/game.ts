@@ -68,6 +68,9 @@ socket.on('error', (data: {'message': string}) => {
 
 function undoPendingMoves() {
     pendingMoves = []
+    if (globalBoard) {
+        drawBoard(globalBoard)
+    }
 }
 
 function enterRoom(room_code: string, username: string) {
