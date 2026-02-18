@@ -34,3 +34,59 @@
     border-left: 5px solid #007bff; /* Nice blue accent for players */
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
+
+.score-entry {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f9f9f9;
+    border-left: 4px solid #4a90e2;
+    border-radius: 4px;
+}
+
+.score-header {
+    font-size: 1.1em;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.synergy-box {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #555;
+    font-style: italic;
+}
+
+.player-card {
+    background: #ffffff;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    width: 250px;
+}
+
+.player-card h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #4a90e2;
+    padding-bottom: 8px;
+    color: #2c3e50;
+}
+
+.player-card dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 8px 16px; /* Vertical and horizontal spacing */
+    margin: 0;
+}
+
+.player-card dt {
+    font-weight: bold;
+    color: #586069;
+    text-align: left;
+}
+
+.player-card dd {
+    margin: 0; /* Important: removes default browser indent */
+    text-align: right;
+    color: #24292e;
+}
