@@ -1,7 +1,7 @@
 import uuid
 import random
 import string
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
 from models.board import GameBoard
@@ -129,6 +129,11 @@ def create_new_game():
 
 # --- ROUTES & SOCKET EVENTS ---
 
+@app.before_request
+def ensure_user_id():
+    if 'user_id' not in session:
+        session['user_id'] = str(uuid.uuid4()) # This stays the same on refresh!
+
 @app.route('/')
 def index():
     """Renders the main game page."""
@@ -139,7 +144,7 @@ def handle_create_session(data):
     """Creates a room, registers it, and notifies the creator."""
 
     username = data.get('username')
-    session_id = request.sid  # Unique ID for this specific connection
+    session_id = session.get('user_id')  # Unique ID for this specific connection
     
     # 1. Generate Lucky Room Code
     room_code = generate_session_code()
@@ -163,27 +168,36 @@ def handle_join_session(data):
 
     username = data.get('username')
     room_code = data.get('room_code')
-    session_id = request.sid
+    session_id = session.get('user_id')
 
     if room_code in sessions:
         game: Game = sessions[room_code]
-        success = game.add_user(username, session_id)
-        
-        if success:
-            join_room(room_code)        
-
+        player = game.find_by_session_id(session_id)
+        print(f"Player: ${player.to_dict()}")
+        if (player):
             emit('join_success', {
-                'room_code': room_code,
-                'username': username,
-                'board': game.board.to_dict()
-            }, to=session_id)
-
-            emit('player_list_updated', {
-                'players': [p.to_dict() for p in game.players]
-            }, to=room_code)
-
+                    'room_code': room_code,
+                    'username': player.username,
+                    'board': game.board.to_dict()
+                }, to=session_id)
         else:
-            emit('error', {'message': 'Room Full'})
+            success = game.add_user(username, session_id)
+            
+            if success:
+                join_room(room_code)        
+
+                emit('join_success', {
+                    'room_code': room_code,
+                    'username': username,
+                    'board': game.board.to_dict()
+                }, to=session_id)
+
+                emit('player_list_updated', {
+                    'players': [p.to_dict() for p in game.players]
+                }, to=room_code)
+
+            else:
+                emit('error', {'message': 'Room Full'})
     else:
         emit('error', {'message': 'Invalid Room Code'})
 
@@ -215,7 +229,7 @@ def handle_submit_move(data):
 
 def with_room_code_and_session_id_and_game(data, request, inner_func):
     room_code = data.get('room_code')
-    session_id = request.sid
+    session_id = session.get('user_id')
 
     if room_code in sessions:
         game: Game = sessions[room_code]
