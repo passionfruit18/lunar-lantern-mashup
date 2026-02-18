@@ -255,7 +255,8 @@ function leaveGame() {
     location.reload();
 }
 
-// Export functions to window. Maybe better to use Event Listeners later (TODO)
+// Export functions to window.
+// TODO: Maybe better to use Event Listeners later
 (window as any).createGame = createGame;
 (window as any).joinGame = joinGame;
 (window as any).leaveGame = leaveGame;

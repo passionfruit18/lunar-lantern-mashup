@@ -116,7 +116,7 @@ class GameBoard:
         while 0 <= curr_r < BOARD_SIZE and 0 <= curr_c < BOARD_SIZE:
             square = self.grid[curr_r][curr_c]
             if square.tile and square.tile.type == language_type:
-                # TODO: Add logic here for Case A/B (English vs Chinese reuse)
+                # TODO: Add logic here for Chinese as English and English as Chinese re-use
                 # For now, we only collect if it matches the current move's language type
                 sequence.append(PendingMove.from_dict({
                     "row": curr_r,
