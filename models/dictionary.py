@@ -1,0 +1,98 @@
+import re
+from typing import List
+from .tiles import LanguageType
+from .moves import PendingMove
+import nltk
+
+nltk.download('words')
+
+# Optional: pip install nltk
+try:
+    from nltk.corpus import words
+    ENGLISH_SET = set(w.lower() for w in words.words())
+except ImportError:
+    # Fallback if nltk isn't installed yet
+    ENGLISH_SET = {"cat", "dog", "game"} 
+
+class Dictionary:
+
+    _instance = None
+    _initialized = False
+
+    def __new__(cls):
+        if cls._instance is None:
+            print("--- Loading Dictionary into Memory (Singleton) ---")
+            cls._instance = super(Dictionary, cls).__new__(cls)
+        return cls._instance
+
+    def _load_data(self):
+        
+        try:
+            nltk.data.find('corpora/words')
+        except LookupError:
+            print("--- NLTK Words not found. Downloading now... ---")
+            nltk.download('words')
+
+        from nltk.corpus import words
+
+        self.english_words.update(set(w.lower() for w in words.words()))
+        # Placeholder for your actual file loading logic
+        # Example: with open('en_words.txt') as f: ...
+        # TODO: Add Chinese Dictionary Corpus
+        self.chinese_words.update(["你好", "学习"])
+        self.chengyu.update(["一心一意", "马到成功"])
+        print(f"--- Dictionary Loaded: {len(self.english_words)} EN words, {len(self.chengyu)} ChengYu ---")
+
+    def __init__(self):
+        if hasattr(self, '_initialized') and self._initialized:
+            return
+        
+        print("--- Loading Dictionary (Once Only) ---")
+        self.english_words = set()
+        self.chinese_words = set()
+        self.chengyu = set()
+        self._load_data()
+        
+        # Mark as initialized
+        self._initialized = True
+
+
+    def validate_sequence(self, sequence: List[PendingMove]) -> bool:
+        """
+        Takes a full sequence (Pending + Existing tiles) 
+        and validates it based on its language type.
+        """
+        if not sequence:
+            return False
+
+        # 1. Join the values into a single string
+        word_str = "".join([m.value for m in sequence])
+        lang = sequence[0].type
+
+        # 2. Route to the correct validator
+        if lang == LanguageType.ENGLISH:
+            return self.is_english_word(word_str)
+        elif lang == LanguageType.CHINESE:
+            return self.is_chinese_valid(word_str)
+        
+        return False
+
+    def is_english_word(self, word: str) -> bool:
+        return word.lower() in self.english_words
+
+    def is_chinese_valid(self, word: str) -> bool:
+        # Check if it's a standard word OR a 4-character ChengYu
+        return word in self.chinese_words or word in self.chengyu
+    
+
+    def validate_moves(self, all_formed_sequences: List[List[PendingMove]]) -> bool:
+        if (not all_formed_sequences or not all_formed_sequences[0]):
+            # Catches [] and [[]] and [[], ...]
+            return False, "Your move doesn't form any words!"
+        
+        for seq in all_formed_sequences:
+            if not self.validate_sequence(seq):
+                word_str = "".join([m.value for m in seq])
+                return False, f"'{word_str}' is not a valid word!"
+                
+        return True, "Valid Move!"
