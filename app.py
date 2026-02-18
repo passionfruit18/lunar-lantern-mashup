@@ -5,6 +5,7 @@ from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
 from typing import List, Tuple, Dict, Optional
 from models.board import GameBoard
+from models.player import Player
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
@@ -19,22 +20,22 @@ class Game:
         self.board: GameBoard = GameBoard()
         if (testing):
             self.board.initialize_random_tiles()
-        self.players: List[Tuple[str, str]] = []  # List of (username, session_id) tuples
+        self.players: List[Player] = []  # List of (username, session_id) tuples
         self.status = "waiting"
 
-    def add_user(self, user_data: Tuple[str, str]) -> bool:
+    def add_user(self, username: string, session_id: string) -> bool:
         """
         Accepts a tuple (username: string, session_id: string)
         and adds them to the game.
         """
         if len(self.players) < 4:  # Scrabble limit
-            self.players.append(user_data)
-            print(f"User {user_data[0]} added to Room {self.room_code}")
+            self.players.append(Player(username, session_id))
+            print(f"User {username} added to Room {self.room_code}")
             return True
         return False
     
     def get_player_names(self) -> List[str]:
-        return [p[0] for p in self.players]
+        return [p.username for p in self.players]
     
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
@@ -74,7 +75,7 @@ def handle_create_session(data):
     
     # 2. Initialize Game Object
     new_game = Game(room_code)
-    new_game.add_user((username, session_id))
+    new_game.add_user(username, session_id)
     
     sessions[room_code] = new_game
     
@@ -95,7 +96,7 @@ def handle_join_session(data):
 
     if room_code in sessions:
         game: Game = sessions[room_code]
-        success = game.add_user((username, session_id))
+        success = game.add_user(username, session_id)
         
         if success:
             join_room(room_code)        
@@ -107,7 +108,7 @@ def handle_join_session(data):
             }, to=session_id)
 
             emit('player_list_updated', {
-                'players': [p[0] for p in game.players]
+                'players': [p.to_dict() for p in game.players]
             }, to=room_code)
 
         else:
