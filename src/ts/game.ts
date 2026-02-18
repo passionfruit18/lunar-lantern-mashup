@@ -157,24 +157,36 @@ function handleSquareClick(board: BoardModule.Board, row: number, col: number) {
 }
 
 function handleSquareClickEnterChar(board: BoardModule.Board, row: number, col: number) {
-    if (board[row][col].tile !== null) return; // Square occupied
+    const rawValue = prompt("Enter a letter or Chinese character:");
+    if (!rawValue) return;
 
-    // Simple UI prompt for now
-    const choice = prompt("Enter 'e' for English or 'c' for Chinese tile from your hand:");
-    if (!choice) return;
-
-    const value = prompt("Enter the specific character/letter:");
-    
-    if (value) {
-        pendingMoves.push({ 
-            row, col,
-            type: choice === 'e' ?
-            BoardModule.LanguageType.ENGLISH :
-            BoardModule.LanguageType.CHINESE,
-            value });
-        // Add to pending (and visually update your local canvas)
-        renderPendingMove(row, col, value); 
+    // 1. Clean and Validate length
+    const value = rawValue.trim();
+    if (value.length !== 1) {
+        alert("Please enter exactly one character.");
+        return;
     }
+
+    // 2. Automated Language Detection using Regex
+    // \u4e00-\u9fa5 covers the common CJK Unified Ideographs block
+    const isChinese = /[\u4e00-\u9fa5]/.test(value);
+    const isEnglish = /[a-zA-Z]/.test(value);
+
+    if (!isChinese && !isEnglish) {
+        alert("Invalid character. Please use English (A-Z) or Chinese characters.");
+        return;
+    }
+
+    // 3. Push the move using the detected type
+    pendingMoves.push({
+        row,
+        col,
+        type: isEnglish ? BoardModule.LanguageType.ENGLISH : BoardModule.LanguageType.CHINESE,
+        value: isEnglish ? value.toUpperCase() : value // Auto-capitalize English
+    });
+
+    renderPendingMove(row, col, value);
+    
     
 }
 
