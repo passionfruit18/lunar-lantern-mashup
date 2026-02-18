@@ -1,8 +1,22 @@
-import { io } from "socket.io-client";
+// Add this line at the top to tell TS 'io' exists globally
+declare var io: any;
+
 import * as BoardModule from "./board";
 import * as PlayerModule from "./player";
 
 export const socket = io();
+
+function getOrCreatePlayerId(): string {
+    let pid = sessionStorage.getItem('player_id');
+    if (!pid) {
+        pid = crypto.randomUUID(); // Generate a unique ID
+        sessionStorage.setItem('player_id', pid);
+    }
+    return pid;
+}
+
+// When joining the game
+const myPlayerId = getOrCreatePlayerId();
 
 const BOARD_SIZE = 15;
 
@@ -17,7 +31,7 @@ let currentRoom = "";
 function createGame() {
     const user = (document?.getElementById('username') as HTMLInputElement)?.value;
     if (!user) return alert("Please enter a username");
-    socket.emit('create_session', { username: user });
+    socket.emit('create_session', { username: user, player_id: myPlayerId });
 }
 
 function joinGame() {
@@ -25,7 +39,7 @@ function joinGame() {
     const room_code = (document?.getElementById('session-code') as HTMLInputElement)?.value.toUpperCase();
     if (!username || !room_code) return alert("Enter both username and code");
     console.log("Joining game...")
-    socket.emit('join_session', { username: username, room_code: room_code });
+    socket.emit('join_session', { username: username, room_code: room_code, player_id: myPlayerId });
 }
 
 // Expected after createGame()
@@ -36,6 +50,7 @@ socket.on('session_created', (data: SessionData) => {
 
 // Expected after joinGame()
 socket.on('join_success', (data: SessionData) => {
+    console.log("Join Success!")
     enterRoom(data.room_code, data.username);
     drawBoard(data.board);
 });
@@ -44,6 +59,21 @@ socket.on('join_success', (data: SessionData) => {
 socket.on('update_board', (data: SessionData) => {
     drawBoard(data.board);
 });
+
+// Error
+socket.on('error', (data: {'message': string}) => {
+    alert(data.message);    
+    undoPendingMoves()
+});
+
+function undoPendingMoves() {
+    pendingMoves = []
+    if (globalBoard) {
+        drawBoard(globalBoard)
+    }
+}
+
+const cancelMove = undoPendingMoves
 
 function enterRoom(room_code: string, username: string) {
     currentRoom = room_code;
@@ -129,24 +159,36 @@ function handleSquareClick(board: BoardModule.Board, row: number, col: number) {
 }
 
 function handleSquareClickEnterChar(board: BoardModule.Board, row: number, col: number) {
-    if (board[row][col].tile !== null) return; // Square occupied
+    const rawValue = prompt("Enter a letter or Chinese character:");
+    if (!rawValue) return;
 
-    // Simple UI prompt for now
-    const choice = prompt("Enter 'e' for English or 'c' for Chinese tile from your hand:");
-    if (!choice) return;
-
-    const value = prompt("Enter the specific character/letter:");
-    
-    if (value) {
-        pendingMoves.push({ 
-            row, col,
-            type: choice === 'e' ?
-            BoardModule.LanguageType.ENGLISH :
-            BoardModule.LanguageType.CHINESE,
-            value });
-        // Add to pending (and visually update your local canvas)
-        renderPendingMove(row, col, value); 
+    // 1. Clean and Validate length
+    const value = rawValue.trim();
+    if (value.length !== 1) {
+        alert("Please enter exactly one character.");
+        return;
     }
+
+    // 2. Automated Language Detection using Regex
+    // \u4e00-\u9fa5 covers the common CJK Unified Ideographs block
+    const isChinese = /[\u4e00-\u9fa5]/.test(value);
+    const isEnglish = /[a-zA-Z]/.test(value);
+
+    if (!isChinese && !isEnglish) {
+        alert("Invalid character. Please use English (A-Z) or Chinese characters.");
+        return;
+    }
+
+    // 3. Push the move using the detected type
+    pendingMoves.push({
+        row,
+        col,
+        type: isEnglish ? BoardModule.LanguageType.ENGLISH : BoardModule.LanguageType.CHINESE,
+        value: isEnglish ? value.toUpperCase() : value // Auto-capitalize English
+    });
+
+    renderPendingMove(row, col, value);
+    
     
 }
 
@@ -157,7 +199,7 @@ function renderPendingMove(row: number, col: number, value: string) {
 }
 
 function submitMove() {
-    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom });
+    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
 
@@ -215,8 +257,10 @@ function leaveGame() {
     location.reload();
 }
 
-// Export functions to window. Maybe better to use Event Listeners later (TODO)
+// Export functions to window.
+// TODO: Maybe better to use Event Listeners later
 (window as any).createGame = createGame;
 (window as any).joinGame = joinGame;
 (window as any).leaveGame = leaveGame;
 (window as any).submitMove = submitMove;
+(window as any).cancelMove = cancelMove;

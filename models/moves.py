@@ -1,21 +1,35 @@
 import re
 from typing import List, Dict, Any
 from .tiles import LanguageType
+from dataclasses import dataclass
 
-"""
-type PendingMove = {
-    row: number,
-    col: number,
-    type: BoardModule.LanguageType,
-    value: string }
-"""
-def is_straight_line(moves):
+@dataclass
+class PendingMove:
+    row: int
+    col: int
+    type: LanguageType
+    value: str
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Creates a PendingMove instance from a dictionary sent via Socket.IO.
+        """
+        return cls(
+            row=int(data['row']),
+            col=int(data['col']),
+            # This converts the string "ENGLISH" into the Enum LanguageType.ENGLISH
+            type=LanguageType(data['type']),
+            value=str(data['value'])
+        )
+
+def is_straight_line(moves: List[PendingMove]):
     if len(moves) < 2: return True
-    rows = [m['row'] for m in moves]
-    cols = [m['col'] for m in moves]
+    rows = [m.row for m in moves]
+    cols = [m.col for m in moves]
     return len(set(rows)) == 1 or len(set(cols)) == 1
 
-def get_consistent_language(pending_moves: List[Dict[str, Any]]) -> LanguageType:
+def get_consistent_language(pending_moves: List[PendingMove]) -> LanguageType:
     """
     Checks if all moves in the list are either all English or all Chinese.
     Returns the detected LanguageType.
@@ -34,7 +48,7 @@ def get_consistent_language(pending_moves: List[Dict[str, Any]]) -> LanguageType
     detected_langs = set()
 
     for pending_move in pending_moves:
-        val = str(pending_move.get('value', '')).strip()
+        val = str(pending_move.value).strip()
         
         if re.match(en_pattern, val):
             detected_langs.add(LanguageType.ENGLISH)
@@ -48,3 +62,15 @@ def get_consistent_language(pending_moves: List[Dict[str, Any]]) -> LanguageType
 
     # Return the single language present in the set
     return detected_langs.pop()
+
+# Remove position-duplicates i.e. two letters in the same position
+def deduplicate_moves(pending_moves: List[PendingMove]) -> List[PendingMove]:
+    """
+    Ensures only one tile exists per (row, col) coordinate.
+    If duplicates exist, the last one in the list wins.
+    """
+    # Create a mapping of (row, col) -> PendingMove
+    unique_moves = { (m.row, m.col): m for m in pending_moves }
+    
+    # Convert back to a list
+    return list(unique_moves.values())

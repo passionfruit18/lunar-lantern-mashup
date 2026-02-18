@@ -11,6 +11,7 @@ class EnglishTile:
     def __init__(self, char: str):
         self.char = char.upper()
         self.points = 1 # Simplified for now
+        self.type = LanguageType.ENGLISH
 
     def to_dict(self):
         return {
@@ -18,11 +19,15 @@ class EnglishTile:
             "display": self.char,
             "points": self.points
         }
+    
+    def show(self):
+        return self.char
 
 class ChineseTileGroup:
     def __init__(self, parts: List[str]):
         self.parts = parts  # e.g., ["氵", "工", "口"]
         self.actualized_char: Optional[str] = None
+        self.type = LanguageType.CHINESE
 
     def verify(self) -> bool:
         """
@@ -48,6 +53,9 @@ class ChineseTileGroup:
             "display": self.actualized_char,
             "components": self.parts
         }
+    
+    def show(self):
+        return self.actualized_char
 
 # Type alias for clarity
 TileType = Union[EnglishTile, ChineseTileGroup]

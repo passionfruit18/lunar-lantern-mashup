@@ -1,4 +1,5 @@
 import random
+from .dictionary import Dictionary
 
 # 60% Common Characters (60 total)
 # Focus: High frequency, low complexity, easy for beginners
@@ -38,3 +39,25 @@ def selectRandomChineseCharacter():
     else:
         char = random.choice(RARE_CHARACTERS)
     return char
+
+def score_chinese_word(word: str) -> int:
+    """
+    Calculates score based on stroke count and sequence length.
+    """
+    base_score = 0
+    dict = Dictionary()
+    
+    for char in word:
+        # 1. Get stroke count (using hanzipy or a helper)
+        # For now, let's assume a helper that returns 2 points per stroke
+        strokes = dict.get_stroke_count(char)
+        base_score += strokes
+
+    # 2. Length Multiplier
+    # Rewards longer words and ChengYu specifically
+    if len(word) == 4:
+        return base_score * 3  # Big bonus for 4-character idioms!
+    elif len(word) > 1:
+        return base_score * 2  # Standard word bonus
+        
+    return base_score
