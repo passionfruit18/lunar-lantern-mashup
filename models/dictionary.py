@@ -66,6 +66,8 @@ class Dictionary:
             return self.is_english_word(word_str)
         elif lang == LanguageType.CHINESE:
             return self.is_chinese_valid(word_str)
+        else:
+            raise ValueError(f"Unsupported language type: {lang}")
         
         return False
 
@@ -77,9 +79,13 @@ class Dictionary:
         Checks if the string exists as a valid entry in CC-CEDICT.
         This automatically covers single characters, words, and ChengYu.
         """
-        # definition_lookup returns a list of definitions if found, else None
-        result = self.hanzi_dict.definition_lookup(word)
-        return result is not None and len(result) > 0
+        try:
+            # definition_lookup returns a list of definitions if found, else None
+            result = self.hanzi_dict.definition_lookup(word)
+            return result is not None and len(result) > 0
+        except KeyError:
+            # If hanzipy doesn't know the word, it's just not a valid word!
+            return False
     
 
     def validate_moves(self, all_formed_sequences: List[List[PendingMove]]) -> bool:
