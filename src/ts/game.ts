@@ -4,6 +4,18 @@ import * as PlayerModule from "./player";
 
 export const socket = io();
 
+function getOrCreatePlayerId(): string {
+    let pid = sessionStorage.getItem('player_id');
+    if (!pid) {
+        pid = crypto.randomUUID(); // Generate a unique ID
+        sessionStorage.setItem('player_id', pid);
+    }
+    return pid;
+}
+
+// When joining the game
+const myPlayerId = getOrCreatePlayerId();
+
 const BOARD_SIZE = 15;
 
 interface SessionData {
@@ -17,7 +29,7 @@ let currentRoom = "";
 function createGame() {
     const user = (document?.getElementById('username') as HTMLInputElement)?.value;
     if (!user) return alert("Please enter a username");
-    socket.emit('create_session', { username: user });
+    socket.emit('create_session', { username: user, player_id: myPlayerId });
 }
 
 function joinGame() {
@@ -25,7 +37,7 @@ function joinGame() {
     const room_code = (document?.getElementById('session-code') as HTMLInputElement)?.value.toUpperCase();
     if (!username || !room_code) return alert("Enter both username and code");
     console.log("Joining game...")
-    socket.emit('join_session', { username: username, room_code: room_code });
+    socket.emit('join_session', { username: username, room_code: room_code, player_id: myPlayerId });
 }
 
 // Expected after createGame()
@@ -36,6 +48,7 @@ socket.on('session_created', (data: SessionData) => {
 
 // Expected after joinGame()
 socket.on('join_success', (data: SessionData) => {
+    console.log("Join Success!")
     enterRoom(data.room_code, data.username);
     drawBoard(data.board);
 });
@@ -157,7 +170,7 @@ function renderPendingMove(row: number, col: number, value: string) {
 }
 
 function submitMove() {
-    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom });
+    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
 

@@ -144,14 +144,14 @@ def handle_create_session(data):
     """Creates a room, registers it, and notifies the creator."""
 
     username = data.get('username')
-    session_id = session.get('user_id')  # Unique ID for this specific connection
+    tab_session_id = data.get('player_id')  # Unique ID for this specific connection
     
     # 1. Generate Lucky Room Code
     room_code = generate_session_code()
     
     # 2. Initialize Game Object
     new_game = Game(room_code)
-    new_game.add_user(username, session_id)
+    new_game.add_user(username, tab_session_id)
     
     sessions[room_code] = new_game
     
@@ -161,6 +161,9 @@ def handle_create_session(data):
         'room_code': room_code,
         'username': username,
         'board': new_game.board.to_dict()})
+    emit('player_list_updated', {
+        'players': [p.to_dict() for p in new_game.players]
+    }, to=room_code)
 
 @socketio.on('join_session')
 def handle_join_session(data):
@@ -168,39 +171,37 @@ def handle_join_session(data):
 
     username = data.get('username')
     room_code = data.get('room_code')
-    session_id = session.get('user_id')
+    socket_session_id = request.sid
+    tab_session_id = data.get('player_id')
 
     if room_code in sessions:
         game: Game = sessions[room_code]
-        player = game.find_by_session_id(session_id)
-        print(f"Player: ${player.to_dict()}")
-        if (player):
-            emit('join_success', {
-                    'room_code': room_code,
-                    'username': player.username,
-                    'board': game.board.to_dict()
-                }, to=session_id)
+        player = game.find_by_session_id(tab_session_id)        
+        if (player): # You already have an "account" in the game, join it again
+            print(f"Player: ${player.to_dict()}")
+            join_session_inner(room_code, player.username, game.board, socket_session_id, game.players)
         else:
-            success = game.add_user(username, session_id)
-            
+            success = game.add_user(username, tab_session_id)
             if success:
-                join_room(room_code)        
-
-                emit('join_success', {
-                    'room_code': room_code,
-                    'username': username,
-                    'board': game.board.to_dict()
-                }, to=session_id)
-
-                emit('player_list_updated', {
-                    'players': [p.to_dict() for p in game.players]
-                }, to=room_code)
+                join_session_inner(room_code, username, game.board, socket_session_id, game.players)
 
             else:
                 emit('error', {'message': 'Room Full'})
     else:
         emit('error', {'message': 'Invalid Room Code'})
 
+
+def join_session_inner(room_code, username, game_board, socket_session_id, game_players):
+    join_room(room_code)
+    emit('join_success', {
+            'room_code': room_code,
+            'username': username,
+            'board': game_board.to_dict()
+        }, to=socket_session_id)
+    emit('player_list_updated', {
+            'players': [p.to_dict() for p in game_players]
+        }, to=room_code)
+    
 @socketio.on('submit_move')
 def handle_submit_move(data):
     """Validates the room code and adds the player to the session."""
@@ -224,16 +225,16 @@ def handle_submit_move(data):
         else:
             emit('error', {'message': message})
 
-    with_room_code_and_session_id_and_game(data, request, inner_func)
+    with_room_code_and_tab_session_id_and_game(data, request, inner_func)
 
 
-def with_room_code_and_session_id_and_game(data, request, inner_func):
+def with_room_code_and_tab_session_id_and_game(data, request, inner_func):
     room_code = data.get('room_code')
-    session_id = session.get('user_id')
+    tab_session_id = data.get('player_id')
 
     if room_code in sessions:
         game: Game = sessions[room_code]
-        inner_func(room_code, session_id, game)
+        inner_func(room_code, tab_session_id, game)
     else:
         emit('error', {'message': 'Invalid Room Code'})
 
