@@ -12,7 +12,8 @@ class Score:
         chinese_words: List[str], 
         synergy_score: float, 
         synergy_explanation: str,
-        base_value: float
+        base_value: float,
+        move_language: LanguageType
     ):
         self.english_words = english_words
         self.chinese_words = chinese_words
@@ -22,6 +23,7 @@ class Score:
         # Multiplier: 1.0 (at 0/10) to 3.0 (at 10/10)
         self.multiplier = 1 + (2 * (self.synergy_score / 10))
         self.final_score = base_value * self.multiplier
+        self.move_language = move_language
 
     def to_dict(self):
         return {
@@ -30,7 +32,8 @@ class Score:
             "synergy_score": self.synergy_score,
             "synergy_explanation": self.synergy_explanation,
             "multiplier": round(self.multiplier, 2),
-            "final_score": round(self.final_score, 2)
+            "final_score": round(self.final_score, 2),
+            "move_language": self.move_language
         }
 
 class Hand:
@@ -40,7 +43,7 @@ class Hand:
 
     def replenish_hand(self):
         """Refills hand to exactly 10 of each type."""
-        while len(self.chinese_characters) < 10:
+        while len(self.chinese_characters) < 20:
             self.chinese_characters.append(selectRandomChineseCharacter())
             
         while len(self.english_letters) < 10:

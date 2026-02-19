@@ -98,6 +98,7 @@ class Dictionary:
         return True, "Valid Move!"
     
     def get_stroke_count(self, char: str) -> int:
+        # TODO: Not sure if this is actually working, it seems to always return 5
         try:
             # hanzipy decomposition often includes stroke metadata
             data = self.hanzi_dict.get_character_in_section(char)
