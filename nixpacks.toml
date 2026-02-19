@@ -1,0 +1,19 @@
+# nixpacks.toml
+# 1. Tell Nixpacks to use both Python and Node.js toolchains
+providers = ["python", "node"]
+
+[phases.setup]
+# 2. Explicitly install the packages you need
+nixPkgs = ["python3", "nodejs", "npm"]
+
+[phases.build]
+# 3. Combine your local steps into one production build sequence
+cmds = [
+    "pip install -r requirements.txt",
+    "npm install",
+    "npm run build"
+]
+
+[start]
+# 4. Same as your Procfile or local run command
+cmd = "python app.py"
