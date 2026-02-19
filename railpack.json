@@ -6,6 +6,9 @@
     },
     "steps": {
       "install": {
+        "inputs": [
+          { "local": true }
+        ],
         "commands": [
           "pip install -r requirements.txt",
           "npm install"
