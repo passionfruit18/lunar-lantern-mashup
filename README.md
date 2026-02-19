@@ -74,7 +74,8 @@ def score_english_word(word: str) -> int:
         bonus = 10
         
     return base_sum + bonus
-
+```
+```
 def score_chinese_word(word: str) -> int:
     """
     Calculates score based on stroke count and sequence length.
@@ -96,3 +97,21 @@ def score_chinese_word(word: str) -> int:
         return base_score * 2  # Standard word bonus
         
     return base_score
+```
+---
+
+### Architecture
+
+- Frontend: Typescript (esbuild)
+- Backend: Python/Flask/Sockets
+- AI/LLM: Gemini 2.5 Flash (Semantic Analysis)
+
+### Running Locally
+
+- Run `pip install -r requirements.txt`
+
+- Run `npm install`
+
+- Run `npm run dev` (maybe in a separate terminal tab) to build the game engine. Compiling Transcript to Javascript.
+
+- Run `python app.py` to run!
