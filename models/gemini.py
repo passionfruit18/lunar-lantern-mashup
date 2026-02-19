@@ -33,9 +33,11 @@ class SynergyEngine:
         self.model_id = "gemini-2.5-flash" # Use the latest 2026 model!
 
     def calculate_synergy(self, english_words: List[str], chinese_words: List[str]) -> SynergyScoreResult:
+        eng_words_joined = ", ".join(english_words)
+        chin_words_joined = ", ".join(chinese_words)
         prompt = f"""
-        Analyze the relationship between the English words '{", ".join(english_words)}' 
-        and the Chinese words '{", ".join(chinese_words)}'.
+        Analyze the relationship between the English words '{eng_words_joined}' 
+        and the Chinese words '{chin_words_joined}'.
         If there is any relationship between an English word and a Chinese word, highlight it.
         Return a JSON object with:
         1. 'synergy_score': (0-10) based on semantic or poetic or paradoxical connection.
@@ -43,7 +45,8 @@ class SynergyEngine:
         
         Example: 'Fire' and '水' (Water) = Score 8, "A classic elemental clash!"
         """
-        
+
+        print(f"Requesting Gemini to analyse synergy between ENGLISH: [{eng_words_joined}] and CHINESE: [{chin_words_joined}]")
         response = self.client.models.generate_content(
             model=self.model_id,
             contents=prompt,
