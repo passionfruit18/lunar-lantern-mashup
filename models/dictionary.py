@@ -5,8 +5,6 @@ from .moves import PendingMove
 import nltk
 from hanzipy.dictionary import HanziDictionary
 
-nltk.download('words')
-
 class Dictionary:
 
     _instance = None

@@ -8,6 +8,10 @@ from models.board import BOARD_SIZE
 from models.moves import PendingMove
 from models.game import Game
 import os
+import nltk
+
+
+nltk.download('words')
 
 
 # --- CONFIGURATION & GLOBALS ---
