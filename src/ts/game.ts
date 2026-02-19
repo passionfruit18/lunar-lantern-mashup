@@ -4,7 +4,9 @@ declare var io: any;
 import * as BoardModule from "./board";
 import * as PlayerModule from "./player";
 
-export const socket = io();
+export const socket = io({
+    transports: ["websocket"] 
+});
 
 function getOrCreatePlayerId(): string {
     let pid = sessionStorage.getItem('player_id');

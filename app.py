@@ -1,7 +1,10 @@
+from gevent import monkey
+monkey.patch_all()
+
 import uuid
 import random
 import string
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
 from typing import Dict
 from models.board import BOARD_SIZE
@@ -16,8 +19,8 @@ nltk.download('words')
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hanzi_secret_123'
-socketio = SocketIO(app, cors_allowed_origins="*")
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'dev-key-for-local-only')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', manage_session=False)
     
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
@@ -39,11 +42,6 @@ def create_new_game():
     }
 
 # --- ROUTES & SOCKET EVENTS ---
-
-@app.before_request
-def ensure_user_id():
-    if 'user_id' not in session:
-        session['user_id'] = str(uuid.uuid4()) # This stays the same on refresh!
 
 @app.route('/')
 def index():
