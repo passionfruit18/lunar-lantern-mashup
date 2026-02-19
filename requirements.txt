@@ -5,3 +5,4 @@ nltk
 hanzipy
 python-dotenv
 google-genai
+gunicorn
