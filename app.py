@@ -19,7 +19,7 @@ nltk.download('words')
 
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hanzi_secret_123'
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'dev-key-for-local-only')
 socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
     
 # In-memory store for game sessions
