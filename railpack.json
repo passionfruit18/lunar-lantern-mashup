@@ -1,24 +1,12 @@
 {
     "$schema": "https://schema.railpack.com",
     "packages": {
-      "python": "3.12",
       "node": "20"
     },
     "steps": {
-      "install": {
-        "inputs": [
-          { "local": true }
-        ],
-        "commands": [
-          "pip install -r requirements.txt",
-          "npm install"
-        ]
-      },
       "build": {
-        "inputs": [
-          { "step": "install" }
-        ],
         "commands": [
+          "npm install",
           "npm run build"
         ]
       }
