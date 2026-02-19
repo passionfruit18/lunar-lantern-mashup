@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-
 import uuid
 import random
 import string
@@ -20,7 +17,7 @@ nltk.download('words')
 # --- CONFIGURATION & GLOBALS ---
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'dev-key-for-local-only')
-socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', manage_session=False)
     
 # In-memory store for game sessions
 # Structure: { session_id: { "players": [id1, id2], "board": [], "tiles": [] } }
