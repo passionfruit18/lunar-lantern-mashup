@@ -25,21 +25,20 @@ LLM is a competitive multiplayer game that challenges players to find poetic and
     (whether perpendicularly or in sequence)
     as that Chinese character if they specify what that character is.
 
-    2b-i. Compose an English word as in normal Scrabble.
+    2b-i. Compose an English word..
 
-    2b-ii. English-English reuse: as in normal Scrabble.
+    2b-ii. English-English reuse.
 
     2b-iii. Chinese as English reuse:
     The first letter of the pinyin of the Chinese word
     or any of its radicals can be re-used as an English letter.
 
-
-2c: Chinese-English dual synergy: If a Chinese word or English word is placed next to the counterpart. The relationship between the words is rated out of 10 and EXPLAINED by an LLM (this is educational). The output of the explanation goes in the game log which can be reviewed. (Uses AI! Hooray!) Multiplier of basic score is (1 + 2 * (score/10))
+    2c: Chinese-English dual synergy: If a Chinese word or English word is placed next to the counterpart. The relationship between the words is rated out of 10 and EXPLAINED by an LLM (this is educational). The output of the explanation goes in the game log which can be reviewed. (Uses AI! Hooray!) Multiplier of basic score is (1 + 2 * (score/10))
 
 ---
 
 ### Basic Scoring
-
+```
 LETTER_POINTS = {
     'A': 1, 'E': 1, 'I': 1, 'O': 1, 'U': 1, 'L': 1, 'N': 1, 'R': 1, 'S': 1, 'T': 1,
     'D': 2, 'G': 2,
@@ -49,7 +48,8 @@ LETTER_POINTS = {
     'J': 8, 'X': 8,
     'Q': 10, 'Z': 10
 }
-
+```
+```
 def score_english_word(word: str) -> int:
     """
     Calculates the base point value of an English word.
