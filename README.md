@@ -1,12 +1,7 @@
-# 2026_02_17_Hanzi_Dash: Chinese + English Scrabble
+# 🏮 Lunar Lantern Mashup: a Lexical Logical Melee (LLM) 🏮
+## A Bilingual Synergy Game powered by Gemini 2.5 Flash.
 
-Run pip install -r requirements.txt
-
-Run npm install
-
-Run npm run dev (maybe in a separate terminal tab) to build the game engine. Compiling Transcript to Javascript.
-
-Run python app.py to run!
+LLM is a competitive multiplayer game that challenges players to find poetic and logical connections between English and Chinese characters. It utilizes Large Language Models to provide real-time, nuanced scoring and semantic analysis.
 
 ---
 
