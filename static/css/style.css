@@ -98,3 +98,31 @@
     text-align: right;
     color: #24292e;
 }
+
+.lantern-spinner {
+    font-size: 3rem;
+    display: inline-block;
+    animation: glow-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes glow-pulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 5px #ffaa00); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 20px #ff4400); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 5px #ffaa00); }
+}
+
+.explosion-particle {
+    font-size: 3rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+    animation: explode 8s forwards cubic-bezier(0, .9, .57, 1);
+}
+
+@keyframes explode {
+    to {
+        transform: translate(var(--x), var(--y)) rotate(360deg);
+        opacity: 0.5;
+    }
+}

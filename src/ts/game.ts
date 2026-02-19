@@ -101,6 +101,9 @@ function isGameReady(): boolean {
 
 // Draw the board!
 function drawBoard(board: BoardModule.Board) {
+    const loader = document.getElementById('loader') as HTMLDivElement;
+    loader.style.display = 'none'; // Stop spinner
+    
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     prepareCanvas(canvas)
@@ -201,6 +204,9 @@ function renderPendingMove(row: number, col: number, value: string) {
 }
 
 function submitMove() {
+    const loader = document.getElementById('loader') as HTMLDivElement;
+    loader.style.display = 'block'; // Start spinner
+    triggerExplosion(); // Celebration!
     socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
@@ -258,6 +264,27 @@ function updatePlayerSidebar(players: PlayerModule.PlayerData[]) {
 function leaveGame() {
     location.reload();
 }
+
+function triggerExplosion() {
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.innerHTML = '🏮';
+        particle.className = 'explosion-particle';
+        
+        // Randomize direction
+        const x = (Math.random() - 0.5) * 300;
+        const y = (Math.random() - 0.5) * 300;
+        
+        particle.style.setProperty('--x', `${x}px`);
+        particle.style.setProperty('--y', `${y}px`);
+        
+        document.body.appendChild(particle);
+        
+        // Remove after animation finishes
+        setTimeout(() => particle.remove(), 1000);
+    }
+}
+
 
 // Export functions to window.
 // TODO: Maybe better to use Event Listeners later
