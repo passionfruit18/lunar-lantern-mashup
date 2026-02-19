@@ -266,14 +266,22 @@ function leaveGame() {
 }
 
 function triggerExplosion() {
-    for (let i = 0; i < 50; i++) {
+    const maxRadius = 150; // How far they fly
+    const particle_num = 80
+    for (let i = 0; i < particle_num; i++) {
         const particle = document.createElement('div');
         particle.innerHTML = '🏮';
         particle.className = 'explosion-particle';
         
-        // Randomize direction
-        const x = (Math.random() - 0.5) * 300;
-        const y = (Math.random() - 0.5) * 300;
+        // 1. Pick a random angle (0 to 2π radians)
+        const angle = Math.random() * 2 * Math.PI;
+        
+        // 2. Pick a random distance (sqrt for uniform distribution)
+        const distance = Math.sqrt(Math.random()) * maxRadius;
+        
+        // 3. Convert Polar to Cartesian (x, y)
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
         
         particle.style.setProperty('--x', `${x}px`);
         particle.style.setProperty('--y', `${y}px`);
