@@ -7,6 +7,7 @@ from typing import Dict
 from models.board import BOARD_SIZE
 from models.moves import PendingMove
 from models.game import Game
+import os
 
 
 # --- CONFIGURATION & GLOBALS ---
@@ -147,7 +148,9 @@ def with_room_code_and_tab_session_id_and_game(data, request, inner_func):
 
 # --- EXECUTION ---
 
+port = int(os.environ.get("PORT", 8888))
+
 if __name__ == '__main__':
     # Using eventlet or gevent is recommended for production, 
     # but the built-in development server works for local testing.
-    socketio.run(app, debug=True, port=8888)
+    socketio.run(app, debug=True, port=port)
