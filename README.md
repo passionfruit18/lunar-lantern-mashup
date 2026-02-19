@@ -1,12 +1,7 @@
-# 2026_02_17_Hanzi_Dash: Chinese + English Scrabble
+# 🏮 Lunar Lantern Mashup: a Lexical Logical Melee (LLM) 🏮
+## A Bilingual Synergy Game powered by Gemini 2.5 Flash.
 
-Run pip install -r requirements.txt
-
-Run npm install
-
-Run npm run dev (maybe in a separate terminal tab) to build the game engine. Compiling Transcript to Javascript.
-
-Run python app.py to run!
+LLM is a competitive multiplayer game that challenges players to find poetic and logical connections between English and Chinese characters. It utilizes Large Language Models to provide real-time, nuanced scoring and semantic analysis.
 
 ---
 
@@ -30,21 +25,20 @@ Run python app.py to run!
     (whether perpendicularly or in sequence)
     as that Chinese character if they specify what that character is.
 
-    2b-i. Compose an English word as in normal Scrabble.
+    2b-i. Compose an English word..
 
-    2b-ii. English-English reuse: as in normal Scrabble.
+    2b-ii. English-English reuse.
 
     2b-iii. Chinese as English reuse:
     The first letter of the pinyin of the Chinese word
     or any of its radicals can be re-used as an English letter.
 
-
-2c: Chinese-English dual synergy: If a Chinese word or English word is placed next to the counterpart. The relationship between the words is rated out of 10 and EXPLAINED by an LLM (this is educational). The output of the explanation goes in the game log which can be reviewed. (Uses AI! Hooray!) Multiplier of basic score is (1 + 2 * (score/10))
+    2c: Chinese-English dual synergy: If a Chinese word or English word is placed next to the counterpart. The relationship between the words is rated out of 10 and EXPLAINED by an LLM (this is educational). The output of the explanation goes in the game log which can be reviewed. (Uses AI! Hooray!) Multiplier of basic score is (1 + 2 * (score/10))
 
 ---
 
 ### Basic Scoring
-
+```
 LETTER_POINTS = {
     'A': 1, 'E': 1, 'I': 1, 'O': 1, 'U': 1, 'L': 1, 'N': 1, 'R': 1, 'S': 1, 'T': 1,
     'D': 2, 'G': 2,
@@ -54,7 +48,8 @@ LETTER_POINTS = {
     'J': 8, 'X': 8,
     'Q': 10, 'Z': 10
 }
-
+```
+```
 def score_english_word(word: str) -> int:
     """
     Calculates the base point value of an English word.
@@ -79,7 +74,8 @@ def score_english_word(word: str) -> int:
         bonus = 10
         
     return base_sum + bonus
-
+```
+```
 def score_chinese_word(word: str) -> int:
     """
     Calculates score based on stroke count and sequence length.
@@ -101,3 +97,21 @@ def score_chinese_word(word: str) -> int:
         return base_score * 2  # Standard word bonus
         
     return base_score
+```
+---
+
+### Architecture
+
+- Frontend: Typescript (esbuild)
+- Backend: Python/Flask/Sockets
+- AI/LLM: Gemini 2.5 Flash (Semantic Analysis)
+
+### Running Locally
+
+- Run `pip install -r requirements.txt`
+
+- Run `npm install`
+
+- Run `npm run dev` (maybe in a separate terminal tab) to build the game engine. Compiling Transcript to Javascript.
+
+- Run `python app.py` to run!
