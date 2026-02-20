@@ -10,6 +10,7 @@ from typing import Dict
 from models.board import BOARD_SIZE
 from models.moves import PendingMove
 from models.game import Game
+from models.gemini import HintResult
 import os
 import nltk
 
@@ -147,6 +148,21 @@ def with_room_code_and_tab_session_id_and_game(data, request, inner_func):
         inner_func(room_code, tab_session_id, game)
     else:
         emit('error', {'message': 'Invalid Room Code'})
+
+@socketio.on('request_hint')
+def handle_hint(data):
+    socket_session_id = request.sid
+    def inner_func(room_code, session_id, game: Game):
+        player = game.find_by_session_id(session_id)
+        # logic to call Gemini with the specific instructions...
+        hint_result: HintResult = game.synergy_engine.call_gemini_for_hint(player)
+                
+        emit('display_hint', {'englishHint': hint_result.english_hint,
+                              'chineseHint': hint_result.chinese_hint},
+            to=socket_session_id)
+
+    with_room_code_and_tab_session_id_and_game(data, request, inner_func)
+
 
 # --- EXECUTION ---
 
