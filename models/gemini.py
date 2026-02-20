@@ -3,7 +3,9 @@ import json
 from google import genai
 from dotenv import load_dotenv
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
+from .player import Player
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -26,6 +28,10 @@ class SynergyScoreResult:
             synergy_explanation=str(data.get("synergy_explanation", "No explanation provided."))
         )
     
+class HintResult(BaseModel):
+    english_hint: str
+    chinese_hint: str
+
 class SynergyEngine:
     def __init__(self):
         # The new client-based approach
@@ -61,3 +67,28 @@ class SynergyEngine:
         print(f"Gemini Response: {response.parsed}")
         return response.parsed
     
+    def call_gemini_for_hint(self, player: Player) -> HintResult:
+        eng_letters_joined = ", ".join(player.hand.english_letters)
+        chin_words_joined = ", ".join(player.hand.chinese_characters)
+        prompt = f"""
+        Give the user a hint.
+        
+        Return a JSON object with:
+        1. 'english_hint': How to form an English word with English letters '{eng_letters_joined}'. Literally give a few examples. Focus on Science/Technology/AI examples.
+        2. 'chinese_hint': Explain (in English) the etymology of Chinese words '{chin_words_joined}'. First give the meaning of the word in a STEM/AI context. This should be inside an HTML <ul> element, each word has a <li> element.
+        """
+
+        print(f"Requesting Gemini to give a hint for ENGLISH: [{eng_letters_joined}] and CHINESE: [{chin_words_joined}]")
+        response = self.client.models.generate_content(
+            model=self.model_id,
+            contents=prompt,
+            config={
+                'response_mime_type': 'application/json',
+                'response_schema': HintResult,
+            }
+        )
+        
+        # The response is now automatically parsed!
+        
+        print(f"Gemini Response: {response.parsed}")
+        return response.parsed

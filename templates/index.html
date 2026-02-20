@@ -24,15 +24,16 @@
 
 </head>
 <body>
-    <h1>🏮 Lunar Lantern Mashup: A Lexical Logical Melee 🏮</h1>
+    <h1 class="lantern-glow-text">🏮 Lunar Lantern Mashup: A Lexical Logical Melee 🏮</h1>
 
     <div id="setup-area" class="menu">
         <input type="text" id="username" placeholder="Enter Username" required>
         <br><br>
-        <button onclick="createGame()">Create New Game</button>
+        <button class="lantern-button" onclick="createGame()">Create New Game</button>
         <br><br>
         <input type="text" id="session-code" placeholder="Enter Code">
-        <button onclick="joinGame()">Join Game</button>
+        <br><br>
+        <button class="lantern-button" onclick="joinGame()">Join Game</button>
     </div>
 
     <div id="debug-info" style="display: none">
@@ -43,7 +44,7 @@
     <div id="game-area" class="hidden">
         <h3>Room: <span id="display-room-code"></span></h3>
         <h3>User: <span id="display-username"></span></h3>
-        <div id="loader" style="display:none;">
+        <div class="lantern-loader" style="display:none;">
             <span class="lantern-spinner">🏮</span>
             <p>Consulting the Oracle...</p>
         </div>
@@ -55,18 +56,63 @@
                 <ul id="player-list"></ul>
             </div>
         </div>
+        <div class="hint-scroll">
+            Hints
+        </div>
         <div id="controls">
-            <p>Click a square to place a tile</p>
-            <button onclick="submitMove()">Submit Move</button>
-            <br/>
-            <br/>
-            <button onclick="cancelMove()">Cancel Move</button>
+            <p class="lantern-glow-text">Click a square to place a tile</p>
+            <button class="lantern-button" onclick="getHint()">Get Hint</button>
+            <br/><br/>
+            <button class="lantern-button" onclick="submitMove()">Submit Move</button>
+            <br/><br/>
+            <div class="lantern-loader" style="display:none;">
+                <span class="lantern-spinner">🏮</span>
+                <p>Consulting the Oracle...</p>
+            </div>
+            <br/><br/>
+            <button class="lantern-button" onclick="cancelMove()">Cancel Move</button>
             <br/><br/><br/><br/><br/><br/>
-            <button onclick="leaveGame()">Leave</button>
+            <button class="lantern-button" onclick="leaveGame()">Leave</button>
             <br/><br/><br/>
             <a href="https://www.flaticon.com/free-icons/chinese-lantern" title="chinese lantern icons">Chinese lantern icons created by frdmn - Flaticon</a>
         </div>
     </div>
+
+    <section class="lore-section lantern-glow-text" aria-labelledby="lore-title">
+        <h2> 🏮🤖 Tradition & Technology 🤖🏮 </h2>
+        <p>
+            Inspired by the <strong>Lantern Festival (Yuan Xiao Jie)</strong>, this game 
+            blends traditional Chinese etymology with <strong>Gemini AI</strong> to promote a harmonious competitive spirit.
+        </p>
+        <h2> 🏮 The Inspiration 🏮 </h2>
+        <p>
+            This game was inspired by the vibrant Lunar New Year festivities that illuminate streets from Shanghai to San Francisco.
+            Traditionally, the "Lantern Festival" (元宵節) marks the final day of the New Year celebrations, symbolizing the return of spring and the reunion of family.
+            We created Lunar Lantern Mashup to capture that spirit of discovery—combining the ancient beauty of Chinese iconography with the cutting-edge "magic" of modern AI.
+        </p>
+        <h2> 📜 The Lore of the Lanterns 📜</h2>
+        <p>
+            In ancient folklore, lanterns were more than just light; they were messengers to the heavens.
+            Red lanterns are hung to drive away the beast Nian and beckon good fortune into the household.
+            Each character and color in our game is rooted in this history:
+            <ul>
+                <li>Red (紅): The color of fire, used to ward off evil spirits and signify joy.</li>
+                <li>Gold (金): Representing earth and wealth, often paired with red to bring prosperity.</li>
+                <li>The Riddles (燈謎): For centuries, lantern owners wrote riddles on slips of paper for passersby to solve.
+                    Our AI "Synergy" engine is a 21st-century tribute to this tradition of wordplay and hidden meanings.</li>
+            </ul>
+                            
+        </p>
+        <h2> 🐉 "The Synergy of Elements" 🐉 </h2>
+        <p>
+            Why "Mashup"? In Chinese cosmology, the world is a balance of five elements: Wood, Fire, Earth, Metal, and Water.
+            The Lunar New Year is a time when these elements shift and realign.
+            In this game, your task is to act as the Lantern Master, finding the linguistic and spiritual "synergy" between disparate symbols.
+            When the AI recognizes a match, it's a sign that the elements have found their harmony for the coming year.
+        </p>
+
+
+    </section>
 
 </body>
 </html>

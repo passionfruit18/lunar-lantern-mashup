@@ -7,3 +7,4 @@ nltk
 hanzipy
 python-dotenv
 google-genai
+pydantic
