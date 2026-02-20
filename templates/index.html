@@ -24,15 +24,16 @@
 
 </head>
 <body>
-    <h1>🏮 Lunar Lantern Mashup: A Lexical Logical Melee 🏮</h1>
+    <h1 class="lantern-glow-text">🏮 Lunar Lantern Mashup: A Lexical Logical Melee 🏮</h1>
 
     <div id="setup-area" class="menu">
         <input type="text" id="username" placeholder="Enter Username" required>
         <br><br>
-        <button onclick="createGame()">Create New Game</button>
+        <button class="lantern-button" onclick="createGame()">Create New Game</button>
         <br><br>
         <input type="text" id="session-code" placeholder="Enter Code">
-        <button onclick="joinGame()">Join Game</button>
+        <br><br>
+        <button class="lantern-button" onclick="joinGame()">Join Game</button>
     </div>
 
     <div id="debug-info" style="display: none">
@@ -57,22 +58,22 @@
         </div>
         <div id="controls">
             <p>Click a square to place a tile</p>
-            <button onclick="submitMove()">Submit Move</button>
+            <button class="lantern-button" onclick="submitMove()">Submit Move</button>
             <br/>
             <div class="lantern-loader" style="display:none;">
                 <span class="lantern-spinner">🏮</span>
                 <p>Consulting the Oracle...</p>
             </div>
             <br/>
-            <button onclick="cancelMove()">Cancel Move</button>
+            <button class="lantern-button" onclick="cancelMove()">Cancel Move</button>
             <br/><br/><br/><br/><br/><br/>
-            <button onclick="leaveGame()">Leave</button>
+            <button class="lantern-button" onclick="leaveGame()">Leave</button>
             <br/><br/><br/>
             <a href="https://www.flaticon.com/free-icons/chinese-lantern" title="chinese lantern icons">Chinese lantern icons created by frdmn - Flaticon</a>
         </div>
     </div>
 
-    <section class="lore-section" aria-labelledby="lore-title">
+    <section class="lore-section lantern-glow-text" aria-labelledby="lore-title">
         <h2> 🏮🤖 Tradition & Technology 🤖🏮 </h2>
         <p>
             Inspired by the <strong>Lantern Festival (Yuan Xiao Jie)</strong>, this game 
