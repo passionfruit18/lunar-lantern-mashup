@@ -99,10 +99,16 @@ function isGameReady(): boolean {
     return globalBoard !== null;
 }
 
+const toggleLoaders = (show: boolean): void => {
+    const loaders = document.querySelectorAll<HTMLElement>('.lantern-loader');
+    loaders.forEach((loader) => {
+        loader.style.display = show ? 'block' : 'none';
+    });
+};
+
 // Draw the board!
 function drawBoard(board: BoardModule.Board) {
-    const loader = document.getElementById('loader') as HTMLDivElement;
-    loader.style.display = 'none'; // Stop spinner
+    toggleLoaders(false)
     
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
@@ -204,8 +210,7 @@ function renderPendingMove(row: number, col: number, value: string) {
 }
 
 function submitMove() {
-    const loader = document.getElementById('loader') as HTMLDivElement;
-    loader.style.display = 'block'; // Start spinner
+    toggleLoaders(true)
     triggerExplosion(); // Celebration!
     socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn

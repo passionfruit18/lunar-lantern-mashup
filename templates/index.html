@@ -43,7 +43,7 @@
     <div id="game-area" class="hidden">
         <h3>Room: <span id="display-room-code"></span></h3>
         <h3>User: <span id="display-username"></span></h3>
-        <div id="loader" style="display:none;">
+        <div class="lantern-loader" style="display:none;">
             <span class="lantern-spinner">🏮</span>
             <p>Consulting the Oracle...</p>
         </div>
@@ -59,6 +59,10 @@
             <p>Click a square to place a tile</p>
             <button onclick="submitMove()">Submit Move</button>
             <br/>
+            <div class="lantern-loader" style="display:none;">
+                <span class="lantern-spinner">🏮</span>
+                <p>Consulting the Oracle...</p>
+            </div>
             <br/>
             <button onclick="cancelMove()">Cancel Move</button>
             <br/><br/><br/><br/><br/><br/>
