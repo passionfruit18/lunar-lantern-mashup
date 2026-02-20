@@ -266,6 +266,48 @@ function updatePlayerSidebar(players: PlayerModule.PlayerData[]) {
     });
 }
 
+interface HintResultData {
+    englishHint: string;
+    chineseHint: string;
+}
+
+function getHint() {
+    // Show that specific lantern spinner we built!
+    toggleLoaders(true);
+    
+    // Emit the request with the specific type
+    socket.emit('request_hint', { 
+        room_code: currentRoom, 
+        player_id: myPlayerId
+    });
+}
+
+// This fires for everyone whenever the player list changes
+socket.on('display_hint', (data: HintResultData) => {
+    toggleLoaders(false)
+    display_hint(data)
+});
+
+function display_hint(hintResult: HintResultData) {
+    const hintScrolls = document.querySelectorAll<HTMLElement>('.hint-scroll');
+    hintScrolls.forEach((hintScroll) => {
+        hintScroll.innerHTML = `
+        <div class="english-hint">
+            <h2>English Hint:</h2>
+            <p>
+                ${hintResult.englishHint}
+            </p>
+        </div>
+        <div class="chinese-hint">
+            <h2>Chinese Hint:</h2>
+            <p>
+                ${hintResult.chineseHint}
+            </p>
+        </div>
+        `
+    });
+}
+
 function leaveGame() {
     location.reload();
 }
@@ -306,3 +348,4 @@ function triggerExplosion() {
 (window as any).leaveGame = leaveGame;
 (window as any).submitMove = submitMove;
 (window as any).cancelMove = cancelMove;
+(window as any).getHint = getHint;

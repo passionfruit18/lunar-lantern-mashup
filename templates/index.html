@@ -56,15 +56,20 @@
                 <ul id="player-list"></ul>
             </div>
         </div>
+        <div class="hint-scroll">
+            Hints
+        </div>
         <div id="controls">
-            <p>Click a square to place a tile</p>
+            <p class="lantern-glow-text">Click a square to place a tile</p>
+            <button class="lantern-button" onclick="getHint()">Get Hint</button>
+            <br/><br/>
             <button class="lantern-button" onclick="submitMove()">Submit Move</button>
-            <br/>
+            <br/><br/>
             <div class="lantern-loader" style="display:none;">
                 <span class="lantern-spinner">🏮</span>
                 <p>Consulting the Oracle...</p>
             </div>
-            <br/>
+            <br/><br/>
             <button class="lantern-button" onclick="cancelMove()">Cancel Move</button>
             <br/><br/><br/><br/><br/><br/>
             <button class="lantern-button" onclick="leaveGame()">Leave</button>
