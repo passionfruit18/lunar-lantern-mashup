@@ -101,6 +101,9 @@ function isGameReady(): boolean {
 
 // Draw the board!
 function drawBoard(board: BoardModule.Board) {
+    const loader = document.getElementById('loader') as HTMLDivElement;
+    loader.style.display = 'none'; // Stop spinner
+    
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     prepareCanvas(canvas)
@@ -201,6 +204,9 @@ function renderPendingMove(row: number, col: number, value: string) {
 }
 
 function submitMove() {
+    const loader = document.getElementById('loader') as HTMLDivElement;
+    loader.style.display = 'block'; // Start spinner
+    triggerExplosion(); // Celebration!
     socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
@@ -258,6 +264,35 @@ function updatePlayerSidebar(players: PlayerModule.PlayerData[]) {
 function leaveGame() {
     location.reload();
 }
+
+function triggerExplosion() {
+    const maxRadius = 150; // How far they fly
+    const particle_num = 80
+    for (let i = 0; i < particle_num; i++) {
+        const particle = document.createElement('div');
+        particle.innerHTML = '🏮';
+        particle.className = 'explosion-particle';
+        
+        // 1. Pick a random angle (0 to 2π radians)
+        const angle = Math.random() * 2 * Math.PI;
+        
+        // 2. Pick a random distance (sqrt for uniform distribution)
+        const distance = Math.sqrt(Math.random()) * maxRadius;
+        
+        // 3. Convert Polar to Cartesian (x, y)
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+        
+        particle.style.setProperty('--x', `${x}px`);
+        particle.style.setProperty('--y', `${y}px`);
+        
+        document.body.appendChild(particle);
+        
+        // Remove after animation finishes
+        setTimeout(() => particle.remove(), 1000);
+    }
+}
+
 
 // Export functions to window.
 // TODO: Maybe better to use Event Listeners later
