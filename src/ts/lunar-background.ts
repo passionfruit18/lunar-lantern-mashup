@@ -24,6 +24,7 @@ interface LanternConfig {
       this.createBackground();
       this.createLanterns();
       this.createDragon();
+      this.createTree();
     }
   
     private injectStyles(): void {
@@ -407,6 +408,146 @@ interface LanternConfig {
           filter: blur(1px);
           top: 5rem;
         }
+
+        .lunar-tree {
+          position: absolute;
+          bottom: 0;
+          right: 5%;
+          width: 200px;
+          height: 300px;
+          animation: treeSway 5s ease-in-out infinite;
+          transform-origin: bottom center;
+        }
+
+        @keyframes treeSway {
+          0%, 100% {
+            transform: rotate(-2deg);
+          }
+          50% {
+            transform: rotate(2deg);
+          }
+        }
+
+        .tree-trunk {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 120px;
+          background: linear-gradient(to right, #5c4033, #7a5c4d, #5c4033);
+          border-radius: 20px 20px 0 0;
+        }
+
+        .tree-trunk::before {
+          content: '';
+          position: absolute;
+          top: 20px;
+          left: -15px;
+          width: 25px;
+          height: 35px;
+          background: linear-gradient(to right, #5c4033, #7a5c4d);
+          border-radius: 15px 5px 5px 15px;
+          transform: rotate(-30deg);
+        }
+
+        .tree-trunk::after {
+          content: '';
+          position: absolute;
+          top: 50px;
+          right: -18px;
+          width: 28px;
+          height: 40px;
+          background: linear-gradient(to right, #7a5c4d, #5c4033);
+          border-radius: 5px 15px 15px 5px;
+          transform: rotate(25deg);
+        }
+
+        .tree-canopy {
+          position: absolute;
+          bottom: 80px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 180px;
+          height: 180px;
+        }
+
+        .tree-leaf-cluster {
+          position: absolute;
+          border-radius: 50%;
+          background: radial-gradient(circle at 30% 30%, #c4b5fd, #a78bfa, #8b5cf6);
+          box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .tree-leaf-cluster-1 {
+          top: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 90px;
+          height: 90px;
+        }
+
+        .tree-leaf-cluster-2 {
+          top: 60px;
+          left: 10px;
+          width: 80px;
+          height: 80px;
+        }
+
+        .tree-leaf-cluster-3 {
+          top: 60px;
+          right: 10px;
+          width: 80px;
+          height: 80px;
+        }
+
+        .tree-leaf-cluster-4 {
+          top: 100px;
+          left: 30px;
+          width: 70px;
+          height: 70px;
+        }
+
+        .tree-leaf-cluster-5 {
+          top: 100px;
+          right: 30px;
+          width: 70px;
+          height: 70px;
+        }
+
+        .falling-leaf {
+          position: absolute;
+          width: 12px;
+          height: 15px;
+          background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+          border-radius: 50% 0 50% 0;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        @keyframes leafFall {
+          0% {
+            opacity: 1;
+            transform: translateY(0) rotate(0deg) translateX(0);
+          }
+          25% {
+            transform: translateY(100px) rotate(90deg) translateX(20px);
+          }
+          50% {
+            transform: translateY(200px) rotate(180deg) translateX(-10px);
+          }
+          75% {
+            transform: translateY(300px) rotate(270deg) translateX(30px);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(400px) rotate(360deg) translateX(0);
+          }
+        }
+
+        .falling-leaf.falling {
+          animation: leafFall 4s ease-in;
+        }
       `;
       document.head.appendChild(this.styleSheet);
     }
@@ -681,6 +822,75 @@ interface LanternConfig {
         initialDelay = 5000 + Math.random() * 5000;
       }      
       setTimeout(triggerDragonFlight, initialDelay);
+    }
+  
+    private createTree(): void {
+      const tree = document.createElement("div");
+      tree.className = "lunar-tree";
+
+      const trunk = document.createElement("div");
+      trunk.className = "tree-trunk";
+
+      const canopy = document.createElement("div");
+      canopy.className = "tree-canopy";
+
+      const leafCluster1 = document.createElement("div");
+      leafCluster1.className = "tree-leaf-cluster tree-leaf-cluster-1";
+
+      const leafCluster2 = document.createElement("div");
+      leafCluster2.className = "tree-leaf-cluster tree-leaf-cluster-2";
+
+      const leafCluster3 = document.createElement("div");
+      leafCluster3.className = "tree-leaf-cluster tree-leaf-cluster-3";
+
+      const leafCluster4 = document.createElement("div");
+      leafCluster4.className = "tree-leaf-cluster tree-leaf-cluster-4";
+
+      const leafCluster5 = document.createElement("div");
+      leafCluster5.className = "tree-leaf-cluster tree-leaf-cluster-5";
+
+      canopy.appendChild(leafCluster1);
+      canopy.appendChild(leafCluster2);
+      canopy.appendChild(leafCluster3);
+      canopy.appendChild(leafCluster4);
+      canopy.appendChild(leafCluster5);
+
+      tree.appendChild(trunk);
+      tree.appendChild(canopy);
+      this.container.appendChild(tree);
+
+      // Make leaves fall occasionally
+      const triggerLeafFall = () => {
+        const leaf = document.createElement("div");
+        leaf.className = "falling-leaf";
+        
+        // Random starting position from the tree canopy area
+        const randomX = 80 + Math.random() * 100; // Random position within canopy
+        const randomY = 100 + Math.random() * 80; // Random starting height in canopy
+        
+        leaf.style.left = `${randomX}px`;
+        leaf.style.top = `${randomY}px`;
+        
+        tree.appendChild(leaf);
+        
+        // Trigger animation
+        setTimeout(() => {
+          leaf.classList.add("falling");
+        }, 10);
+        
+        // Remove leaf after animation completes
+        setTimeout(() => {
+          leaf.remove();
+        }, 4000);
+        
+        // Schedule next leaf fall (every 2-5 seconds)
+        const nextLeafDelay = 2000 + Math.random() * 3000;
+        setTimeout(triggerLeafFall, nextLeafDelay);
+      };
+
+      // Start first leaf fall after 3-5 seconds
+      const initialLeafDelay = 3000 + Math.random() * 2000;
+      setTimeout(triggerLeafFall, initialLeafDelay);
     }
   
     public inject(): void {
