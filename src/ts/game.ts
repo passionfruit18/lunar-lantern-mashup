@@ -93,11 +93,15 @@ socket.on('update_board', (data: SessionData) => {
 });
 
 // Error
-socket.on('error', (data: {'message': string}) => {
+socket.on('move_error', (data: {'message': string}) => {
     alert(data.message);    
     undoPendingMoves()
     toggleLoaders(false);
     toggleSubmitButton(false); // Re-enable submit button
+});
+
+socket.on('session_error', (data: {'message': string}) => {
+    alert(data.message);    
 });
 
 function undoPendingMoves() {
