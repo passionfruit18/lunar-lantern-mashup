@@ -1,7 +1,7 @@
 
 import { socket } from "./util";
 
-import * as PlayerModule from "./player";
+import * as PlayerModule from "../models/player";
 
 // This fires for everyone whenever the player list changes
 socket.on('player_list_updated', (data: {'players': PlayerModule.PlayerData[]}) => {

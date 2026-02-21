@@ -1,7 +1,7 @@
 
 
 
-import * as BoardModule from "./board";
+import * as BoardModule from "../models/board";
 import { gameState } from "./game-state";
 
 const BOARD_SIZE = 15;

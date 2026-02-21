@@ -2,10 +2,10 @@
 declare var io: any;
 
 import './lunar-background';
-import './player-list'
-import { getHint, makeHintScrollDraggable } from "./hint";
-import { submitMove, cancelMove } from "./submit-move";
-import { createGame, joinGame, leaveGame } from "./session";
+import './game-logic/player-list'
+import { getHint, makeHintScrollDraggable } from "./game-logic/hint";
+import { submitMove, cancelMove } from "./game-logic/submit-move";
+import { createGame, joinGame, leaveGame } from "./game-logic/session";
 
 function setupUIListenersInput() {
 

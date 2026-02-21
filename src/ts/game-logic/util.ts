@@ -1,5 +1,5 @@
 
-import { Board } from "./board";
+import { Board } from "../models/board";
 
 export const socket = io({
     transports: ["websocket"] 

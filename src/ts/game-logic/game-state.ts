@@ -1,4 +1,4 @@
-import * as BoardModule from "./board";
+import * as BoardModule from "../models/board";
 
 export type PendingMove = {
     row: number,
