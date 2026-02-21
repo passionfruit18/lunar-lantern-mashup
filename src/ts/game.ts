@@ -58,25 +58,6 @@ socket.on('join_success', (data: SessionData) => {
     drawBoard(data.board);
 });
 
-// Expected after moves made
-socket.on('update_board', (data: SessionData) => {
-    drawBoard(data.board);
-});
-
-// Error
-socket.on('error', (data: {'message': string}) => {
-    alert(data.message);    
-    undoPendingMoves()
-});
-
-function undoPendingMoves() {
-    pendingMoves = []
-    if (globalBoard) {
-        drawBoard(globalBoard)
-    }
-}
-
-const cancelMove = undoPendingMoves
 
 function enterRoom(room_code: string, username: string) {
     currentRoom = room_code;
@@ -111,8 +92,7 @@ const GLOW_COLOR = "#ffaa00"; // Warm Lantern Orange
 const TEXT_COLOR = "#ffffff"; // Bright White for the core of the letter
 
 // Draw the board!
-function drawBoard(board: BoardModule.Board) {
-    toggleLoaders(false)
+function drawBoard(board: BoardModule.Board) {    
     
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
@@ -219,12 +199,52 @@ function renderPendingMove(row: number, col: number, value: string) {
     }
 }
 
+function toggleSubmitButton(isLoading: boolean) {
+    const submitBtn = document.getElementById('submit-button') as HTMLButtonElement;
+    if (!submitBtn) return;
+
+    if (isLoading) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Consulting Oracle...";
+        submitBtn.style.opacity = "0.5";
+        submitBtn.style.cursor = "not-allowed";
+    } else {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Move";
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+    }
+}
+
 function submitMove() {
     toggleLoaders(true)
+    toggleSubmitButton(true) // Disable submit button
     triggerExplosion(); // Celebration!
     socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
+
+// Expected after moves made
+socket.on('update_board', (data: SessionData) => {
+    drawBoard(data.board);
+    toggleLoaders(false);
+    toggleSubmitButton(false); // Re-enable submit button
+});
+
+// Error
+socket.on('error', (data: {'message': string}) => {
+    alert(data.message);    
+    undoPendingMoves()
+});
+
+function undoPendingMoves() {
+    pendingMoves = []
+    if (globalBoard) {
+        drawBoard(globalBoard)
+    }
+}
+
+const cancelMove = undoPendingMoves
 
 let canvasInitialised = false
 
