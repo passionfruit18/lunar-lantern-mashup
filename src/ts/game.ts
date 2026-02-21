@@ -1,69 +1,11 @@
 // Add this line at the top to tell TS 'io' exists globally
 declare var io: any;
 
-import * as BoardModule from "./board";
-import * as PlayerModule from "./player";
 import './lunar-background';
 import './player-list'
-import { socket, SessionData } from "./util";
 import { getHint, makeHintScrollDraggable } from "./hint";
-import { gameState } from "./game-state";
-import { drawBoard } from "./draw-board";
 import { submitMove, cancelMove } from "./submit-move";
-
-
-function createGame() {
-    const user = (document?.getElementById('username') as HTMLInputElement)?.value;
-    if (!user) return alert("Please enter a username");
-    socket.emit('create_session', { username: user, player_id: gameState.myPlayerId });
-}
-
-function joinGame() {
-    const username = (document?.getElementById('username') as HTMLInputElement)?.value;
-    const room_code = (document?.getElementById('session-code') as HTMLInputElement)?.value.toUpperCase();
-    if (!username || !room_code) return alert("Enter both username and code");
-    console.log("Joining game...")
-    socket.emit('join_session', { username: username, room_code: room_code, player_id: gameState.myPlayerId });
-}
-
-// Expected after createGame()
-socket.on('session_created', (data: SessionData) => {
-    enterRoom(data.room_code, data.username);
-    drawBoard(data.board);
-});
-
-// Expected after joinGame()
-socket.on('join_success', (data: SessionData) => {
-    console.log("Join Success!")
-    enterRoom(data.room_code, data.username);
-    drawBoard(data.board);
-});
-
-
-function enterRoom(room_code: string, username: string) {
-    gameState.currentRoom = room_code;
-    document?.getElementById('setup-area')?.classList.add('hidden');
-    document?.getElementById('game-area')?.classList.remove('hidden');
-    const roomDisplay = document?.getElementById('display-room-code')
-    if (roomDisplay) {
-        roomDisplay.innerText = room_code;
-    }
-    const usernameDisplay = document?.getElementById('display-username')
-    if (usernameDisplay) {
-        usernameDisplay.innerText = username;
-    }
-}
-
-socket.on('session_error', (data: {'message': string}) => {
-    alert(data.message);    
-});
-
-
-function leaveGame() {
-    location.reload();
-}
-
-
+import { createGame, joinGame, leaveGame } from "./session";
 
 function setupUIListenersInput() {
 
