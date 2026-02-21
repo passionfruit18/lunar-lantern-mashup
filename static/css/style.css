@@ -29,75 +29,73 @@
     color: #fff;
 }
 
-
 #player-list {
     list-style: none;
-    padding: 0;
-}
-
-#player-list li {
-    padding: 10px;
-    margin-bottom: 8px;
-    background: white;
-    border-radius: 4px;
-    border-left: 5px solid #007bff; /* Nice blue accent for players */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.score-entry {
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #f9f9f9;
-    border-left: 4px solid #4a90e2;
-    border-radius: 4px;
-}
-
-.score-header {
-    font-size: 1.1em;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.synergy-box {
-    margin-top: 5px;
-    font-size: 0.9em;
-    color: #555;
-    font-style: italic;
+    padding-inline-start: 0px;
 }
 
 .player-card {
-    background: #ffffff;
-    border: 1px solid #e1e4e8;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    min-width: 350px
+    padding-bottom: 10px;
 }
 
-.player-card h3 {
-    margin-top: 0;
-    border-bottom: 2px solid #4a90e2;
-    padding-bottom: 8px;
-    color: #2c3e50;
+/* Update your player cards and list items */
+#player-list li, 
+.player-card, 
+.score-entry {
+    /* 1. Remove solid white and use semi-transparent dark or light */
+    background: rgba(255, 255, 255, 0.08) !important; 
+    
+    /* 2. The magic 'Glass' effect */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); /* For Safari support */
+    
+    /* 3. Soft golden borders instead of grey */
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    border-radius: 12px;
+    
+    /* 4. Update text colors for dark background */
+    color: #f0f0f0 !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Specific Header Tweak */
+.player-card h3, .score-header {
+    color: #ffaa00 !important; /* Gold/Orange headers */
+    border-bottom-color: rgba(255, 170, 0, 0.4) !important;
+    text-shadow: 0 0 8px rgba(255, 170, 0, 0.5);
+}
+
+/* Synergy Box (The AI Text) */
+.synergy-box {
+    color: #ddd !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
 }
 
 .player-card dl {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 8px 16px; /* Vertical and horizontal spacing */
-    margin: 0;
+    grid-template-columns: 1fr 3.5fr;
+    gap: 8px 16px;
 }
 
+/* Adjust the labels (dt) and values (dd) for visibility */
 .player-card dt {
-    font-weight: bold;
-    color: #586069;
+    color: #bbb !important;
     text-align: left;
+    padding-left: 10px
 }
 
 .player-card dd {
-    margin: 0; /* Important: removes default browser indent */
+    color: #fff !important;
+    font-family: 'Courier New', monospace; /* Makes hand look like tiles */
     text-align: right;
-    color: #24292e;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.score-entry {
+    font-family: "Google Sans", sans-serif;
+    padding: 10px;
 }
 
 .lantern-spinner {
