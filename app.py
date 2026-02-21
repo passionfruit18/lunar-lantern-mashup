@@ -96,9 +96,9 @@ def handle_join_session(data):
                 join_session_inner(room_code, username, game.board, socket_session_id, game.players)
 
             else:
-                emit('error', {'message': 'Room Full'})
+                emit('session_error', {'message': 'Room Full'})
     else:
-        emit('error', {'message': 'Invalid Room Code'})
+        emit('session_error', {'message': 'Invalid Room Code'})
 
 
 def join_session_inner(room_code, username, game_board, socket_session_id, game_players):
@@ -134,7 +134,7 @@ def handle_submit_move(data):
             }, to=room_code)
 
         else:
-            emit('error', {'message': message})
+            emit('move_error', {'message': message})
 
     with_room_code_and_tab_session_id_and_game(data, request, inner_func)
 
@@ -147,7 +147,7 @@ def with_room_code_and_tab_session_id_and_game(data, request, inner_func):
         game: Game = sessions[room_code]
         inner_func(room_code, tab_session_id, game)
     else:
-        emit('error', {'message': 'Invalid Room Code'})
+        emit('session_error', {'message': 'Invalid Room Code'})
 
 @socketio.on('request_hint')
 def handle_hint(data):
