@@ -84,7 +84,7 @@ interface LanternConfig {
         @keyframes dragonFlyLeft {
           0% {
             left: calc(100% + 200px);
-            top: 80%;
+            top: var(--start-top); /* Variable height */
             opacity: 0;
           }
           5% {
@@ -95,7 +95,7 @@ interface LanternConfig {
           }
           100% {
             left: -200px;
-            top: 10%;
+            top: var(--end-top); /* Variable height */
             opacity: 0;
           }
         }
@@ -103,7 +103,7 @@ interface LanternConfig {
         @keyframes dragonFlyRight {
           0% {
             left: -200px;
-            top: 80%;
+            top: var(--start-top); /* Variable height */
             opacity: 0;
             transform: scaleX(-1);
           }
@@ -115,7 +115,7 @@ interface LanternConfig {
           }
           100% {            
             left: calc(100% + 200px);
-            top: 10%;
+            top: var(--end-top); /* Variable height */
             opacity: 0;
             transform: scaleX(-1);
           }
@@ -625,29 +625,61 @@ interface LanternConfig {
       dragon.appendChild(wing);
   
       this.container.appendChild(dragon);
-  
+
+      const fastFlightIntervals = true
+
       // Make the dragon fly occasionally (every 15-25 seconds)
       const triggerDragonFlight = () => {
-        // 1. Randomly choose a direction
+
+        // 1. Calculate random heights (between 10% and 90% of screen height)
+        // This creates more 'Extreme' random numbers
+        const getRandomHeight = () => {
+            // We use (Math.random() > 0.5) to decide if we favor the top or bottom
+            const bias = Math.random() > 0.5 ? 1 : -1;
+            const variance = Math.sqrt(Math.random()) * 40; // 0 to 40
+            return 50 + (bias * (variance + 10)); // Results swing toward 10% or 90%
+        };
+
+        const startY = getRandomHeight();
+        const endY = getRandomHeight();
+
+        // 2. Inject heights into CSS Variables
+        dragon.style.setProperty('--start-top', `${startY}%`);
+        dragon.style.setProperty('--end-top', `${endY}%`);
+
+        // 3. Randomly choose a direction
         const isFlyingLeft = Math.random() < 0.5;
         const flightClass = isFlyingLeft ? "flying-left" : "flying-right";
         
-        // 2. Add the specific class
+        // 4. Add the specific class
         dragon.classList.add(flightClass);
-        console.log(`Dragon is soaring ${isFlyingLeft ? 'West' : 'East'}...`);
-    
+        console.log(`Dragon is soaring ${isFlyingLeft ? 'West' : 'East'}...`);    
+
         setTimeout(() => {
-            // 3. Remove whatever class was added
+            // 5. Remove whatever class was added
             dragon.classList.remove("flying-left", "flying-right");
             
-            // 4. Schedule next flight
-            const nextFlight = 5000 + Math.random() * 8000;
+            // 6. Schedule next flight
+            
+            let nextFlight = 12000
+            if (fastFlightIntervals) {
+                nextFlight = 1000 + Math.random() * 1000;
+            }
+            else {
+                nextFlight = 5000 + Math.random() * 8000;
+            }            
             setTimeout(triggerDragonFlight, nextFlight);
         }, 11000); // Must match the CSS animation duration
     };
   
       // Initial flight after 5-10 seconds
-      const initialDelay = 5000 + Math.random() * 5000;
+      let initialDelay = 5000
+      if (fastFlightIntervals) {
+        initialDelay = 1000 + Math.random() * 1000;
+      }
+      else {
+        initialDelay = 5000 + Math.random() * 5000;
+      }      
       setTimeout(triggerDragonFlight, initialDelay);
     }
   
