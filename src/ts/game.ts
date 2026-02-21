@@ -4,22 +4,11 @@ declare var io: any;
 import * as BoardModule from "./board";
 import * as PlayerModule from "./player";
 import './lunar-background';
+import { socket, toggleLoaders } from "./util";
+import { getHint, makeHintScrollDraggable } from "./hint";
+import { gameState } from "./game-state";
 
-export const socket = io({
-    transports: ["websocket"] 
-});
 
-function getOrCreatePlayerId(): string {
-    let pid = sessionStorage.getItem('player_id');
-    if (!pid) {
-        pid = crypto.randomUUID(); // Generate a unique ID
-        sessionStorage.setItem('player_id', pid);
-    }
-    return pid;
-}
-
-// When joining the game
-const myPlayerId = getOrCreatePlayerId();
 
 const BOARD_SIZE = 15;
 
@@ -29,12 +18,11 @@ interface SessionData {
     board: BoardModule.Board;    // Uses the Board type defined above
 }
 
-let currentRoom = "";
 
 function createGame() {
     const user = (document?.getElementById('username') as HTMLInputElement)?.value;
     if (!user) return alert("Please enter a username");
-    socket.emit('create_session', { username: user, player_id: myPlayerId });
+    socket.emit('create_session', { username: user, player_id: gameState.myPlayerId });
 }
 
 function joinGame() {
@@ -42,7 +30,7 @@ function joinGame() {
     const room_code = (document?.getElementById('session-code') as HTMLInputElement)?.value.toUpperCase();
     if (!username || !room_code) return alert("Enter both username and code");
     console.log("Joining game...")
-    socket.emit('join_session', { username: username, room_code: room_code, player_id: myPlayerId });
+    socket.emit('join_session', { username: username, room_code: room_code, player_id: gameState.myPlayerId });
 }
 
 // Expected after createGame()
@@ -60,7 +48,7 @@ socket.on('join_success', (data: SessionData) => {
 
 
 function enterRoom(room_code: string, username: string) {
-    currentRoom = room_code;
+    gameState.currentRoom = room_code;
     document?.getElementById('setup-area')?.classList.add('hidden');
     document?.getElementById('game-area')?.classList.remove('hidden');
     const roomDisplay = document?.getElementById('display-room-code')
@@ -80,13 +68,6 @@ let globalBoard: BoardModule.Board | null = null;
 function isGameReady(): boolean {
     return globalBoard !== null;
 }
-
-const toggleLoaders = (show: boolean): void => {
-    const loaders = document.querySelectorAll<HTMLElement>('.lantern-loader');
-    loaders.forEach((loader) => {
-        loader.style.display = show ? 'block' : 'none';
-    });
-};
 
 const GLOW_COLOR = "#ffaa00"; // Warm Lantern Orange
 const TEXT_COLOR = "#ffffff"; // Bright White for the core of the letter
@@ -220,7 +201,7 @@ function submitMove() {
     toggleLoaders(true)
     toggleSubmitButton(true) // Disable submit button
     triggerExplosion(); // Celebration!
-    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
+    socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: gameState.currentRoom, player_id: gameState.myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
 
@@ -235,6 +216,8 @@ socket.on('update_board', (data: SessionData) => {
 socket.on('error', (data: {'message': string}) => {
     alert(data.message);    
     undoPendingMoves()
+    toggleLoaders(false);
+    toggleSubmitButton(false); // Re-enable submit button
 });
 
 function undoPendingMoves() {
@@ -296,66 +279,6 @@ function updatePlayerSidebar(players: PlayerModule.PlayerData[]) {
     });
 }
 
-interface HintResultData {
-    englishHint: string;
-    chineseHint: string;
-}
-
-function toggleHintButton(isLoading: boolean) {
-    const hintBtn = document.getElementById('hint-btn') as HTMLButtonElement;
-    if (!hintBtn) return;
-
-    if (isLoading) {
-        hintBtn.disabled = true;
-        hintBtn.innerText = "Consulting Oracle...";
-        hintBtn.style.opacity = "0.5";
-        hintBtn.style.cursor = "not-allowed";
-    } else {
-        hintBtn.disabled = false;
-        hintBtn.innerText = "Get Hint";
-        hintBtn.style.opacity = "1";
-        hintBtn.style.cursor = "pointer";
-    }
-}
-
-function getHint() {
-    // Show that specific lantern spinner we built!
-    toggleLoaders(true);
-    toggleHintButton(true); // Disable Hint Button
-    
-    // Emit the request with the specific type
-    socket.emit('request_hint', { 
-        room_code: currentRoom, 
-        player_id: myPlayerId
-    });
-}
-
-// This fires for everyone whenever the player list changes
-socket.on('display_hint', (data: HintResultData) => {
-    toggleLoaders(false)
-    toggleHintButton(false) // Re-enable hint button
-    display_hint(data)
-});
-
-function display_hint(hintResult: HintResultData) {
-    const hintScrolls = document.querySelectorAll<HTMLElement>('.hint-scroll');
-    hintScrolls.forEach((hintScroll) => {
-        hintScroll.innerHTML = `
-        <div class="english-hint">
-            <h2>English Hint:</h2>
-            <p>
-                ${hintResult.englishHint}
-            </p>
-        </div>
-        <div class="chinese-hint">
-            <h2>Chinese Hint:</h2>
-            <p>
-                ${hintResult.chineseHint}
-            </p>
-        </div>
-        `
-    });
-}
 
 function leaveGame() {
     location.reload();
@@ -390,53 +313,15 @@ function triggerExplosion() {
     }
 }
 
-// Make elements draggable (used for hint scroll)
-function makeDraggable(el: HTMLElement) {
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-
-    el.onmousedown = (e: MouseEvent) => {
-        e.preventDefault();
-        // Get mouse position at startup
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-    };
-
-    function elementDrag(e: MouseEvent) {
-        e.preventDefault();
-        // Calculate new cursor position
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        // Set element's new position
-        el.style.top = (el.offsetTop - pos2) + "px";
-        el.style.left = (el.offsetLeft - pos1) + "px";
-    }
-
-    function closeDragElement() {
-        // Stop moving when mouse button is released
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-}
 
 // Define your initialization function
 function initializeUI() {
-    const hintScrollElement = document.querySelector('.hint-scroll') as HTMLElement;
 
-    if (hintScrollElement) {
-        // Attach the draggable logic we built
-        makeDraggable(hintScrollElement);
-        console.log("Hint Scroll initialized and draggable.");
-    } else {
-        console.warn("Hint Scroll element not found in the DOM.");
-    }
-
+    makeHintScrollDraggable()
     setupUIListenersInput()
     setupUIListenersButtons()
 }
+
 
 // The "Document Ready" Listener
 if (document.readyState === 'loading') {
