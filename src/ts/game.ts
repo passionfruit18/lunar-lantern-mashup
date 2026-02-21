@@ -281,9 +281,27 @@ interface HintResultData {
     chineseHint: string;
 }
 
+function toggleHintButton(isLoading: boolean) {
+    const hintBtn = document.getElementById('hint-button') as HTMLButtonElement;
+    if (!hintBtn) return;
+
+    if (isLoading) {
+        hintBtn.disabled = true;
+        hintBtn.innerText = "Consulting Oracle...";
+        hintBtn.style.opacity = "0.5";
+        hintBtn.style.cursor = "not-allowed";
+    } else {
+        hintBtn.disabled = false;
+        hintBtn.innerText = "Get Hint";
+        hintBtn.style.opacity = "1";
+        hintBtn.style.cursor = "pointer";
+    }
+}
+
 function getHint() {
     // Show that specific lantern spinner we built!
     toggleLoaders(true);
+    toggleHintButton(true); // Disable Hint Button
     
     // Emit the request with the specific type
     socket.emit('request_hint', { 
@@ -295,6 +313,7 @@ function getHint() {
 // This fires for everyone whenever the player list changes
 socket.on('display_hint', (data: HintResultData) => {
     toggleLoaders(false)
+    toggleHintButton(false) // Re-enable hint button
     display_hint(data)
 });
 
@@ -322,6 +341,7 @@ function leaveGame() {
     location.reload();
 }
 
+// Explosion whenever the user submits a move
 function triggerExplosion() {
     const maxRadius = 150; // How far they fly
     const particle_num = 80
@@ -350,6 +370,7 @@ function triggerExplosion() {
     }
 }
 
+// Make elements draggable (used for hint scroll)
 function makeDraggable(el: HTMLElement) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
