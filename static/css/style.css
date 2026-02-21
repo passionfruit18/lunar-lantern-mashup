@@ -12,7 +12,6 @@
 #game-canvas {
     flex-shrink: 0; /* Prevents the board from getting squished */
     border: 2px solid #333;
-    background-color: #fff;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
@@ -22,10 +21,12 @@
     max-height: 600px; /* Matches canvas height */
     overflow-y: auto; /* Adds scrollbar for long history */
     padding: 15px;
-    background-color: #f4f4f4;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 215, 0, 0.2);
     min-height: 600px; /* Match canvas height */
+    background: rgba(0, 0, 0, 0.4); /* Dark translucent background */
+    backdrop-filter: blur(10px);    /* This creates the "Glass" effect */
+    color: #fff;
 }
 
 

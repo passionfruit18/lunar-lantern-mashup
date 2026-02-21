@@ -107,6 +107,9 @@ const toggleLoaders = (show: boolean): void => {
     });
 };
 
+const GLOW_COLOR = "#ffaa00"; // Warm Lantern Orange
+const TEXT_COLOR = "#ffffff"; // Bright White for the core of the letter
+
 // Draw the board!
 function drawBoard(board: BoardModule.Board) {
     toggleLoaders(false)
@@ -122,10 +125,13 @@ function drawBoard(board: BoardModule.Board) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const x = c * size
             const y = r * size
-            ctx.strokeStyle = "#ccc";
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.2)";;
             ctx.strokeRect(x, y, size, size);
             if (board && board[r][c] && board[r][c].tile) {
-                ctx.fillStyle = "black";
+                // 2. Set the Glow Effect
+                ctx.shadowColor = GLOW_COLOR;
+                ctx.shadowBlur = 10; // The spread of the glow
+                ctx.fillStyle = TEXT_COLOR;
                 ctx.font = "20px Arial";
                 ctx.fillText(BoardModule.simplePrintSquare(board[r][c]), x + 10, y + 28);
             }
@@ -133,7 +139,10 @@ function drawBoard(board: BoardModule.Board) {
                 const pending = pendingMoves.find(m => m.row === r && m.col === c);
                 if (pending) {
                     // Draw with a different style to indicate it's not submitted
-                    ctx.fillStyle = "rgba(0, 102, 204, 0.7)"; // Translucent Blue
+                    // 3. Pending Tiles (Blue Magic Glow)
+                    ctx.shadowColor = "#00ccff";
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
                     ctx.font = "bold 20px Arial";
                     
                     // Center the text slightly differently if you like
