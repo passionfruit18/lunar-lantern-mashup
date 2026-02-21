@@ -168,12 +168,47 @@
 
 .hint-scroll {
     position: absolute;
-    background: #fdf5e6; /* Old paper color */
-    border-left: 5px solid #8b4513;
-    padding: 15px;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-    border-radius: 0 5px 5px 0;
-    font-family: 'Crimson Text', serif;
-    max-width: 250px;
+    /* 1. Translucent warm parchment instead of solid beige */
+    background: rgba(253, 245, 230, 0.15); 
+    
+    /* 2. Glassmorphism core */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    
+    /* 3. The 'Scroll' spine - use a glowing gold instead of brown */
+    border-left: 5px solid rgba(255, 215, 0, 0.6); 
+    
+    /* 4. Soft rounded edges and shadow */
+    border-radius: 0 12px 12px 0;
+    padding: 20px;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    
+    /* 5. Typography */
+    font-family: "Google Sans", sans-serif;
+    color: #fff;
+    max-width: 300px; /* Slightly wider for better legibility */
     z-index: 100;
+    
+    /* 6. Subtle inner glow */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Make the Hint headers pop */
+.hint-scroll h2, .hint-scroll strong {
+    color: #ffaa00;
+    text-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.hint-scroll ul {
+    padding: 0px;
+    list-style: none;
+}
+
+.hint-scroll li::before {
+    content: "🏮"; /* Or a custom SVG */
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px orange);
 }
