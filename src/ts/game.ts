@@ -433,6 +433,31 @@ function initializeUI() {
     } else {
         console.warn("Hint Scroll element not found in the DOM.");
     }
+
+    const nameInput = document.getElementById('username') as HTMLInputElement;
+    const codeInput = document.getElementById('session-code') as HTMLInputElement;
+
+    // Function to handle the "Smart Enter" logic
+    const handleSmartEnter = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            const roomCode = codeInput?.value.trim();
+
+            if (roomCode && roomCode.length > 0) {
+                // If there's text in the code box, try to join
+                console.log("Room code detected, joining game...");
+                joinGame(); 
+            } else {
+                // If the code box is empty, assume they want a new game
+                console.log("No room code, creating new game...");
+                createGame();
+            }
+        }
+    };
+
+    // Attach the listener to BOTH inputs for the best UX
+    nameInput?.addEventListener('keypress', handleSmartEnter);
+    codeInput?.addEventListener('keypress', handleSmartEnter);
+    nameInput?.focus();
 }
 
 // The "Document Ready" Listener
