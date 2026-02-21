@@ -81,7 +81,7 @@ interface LanternConfig {
           filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.4));
         }
   
-        @keyframes dragonFly {
+        @keyframes dragonFlyLeft {
           0% {
             left: calc(100% + 200px);
             top: 80%;
@@ -99,9 +99,33 @@ interface LanternConfig {
             opacity: 0;
           }
         }
+
+        @keyframes dragonFlyRight {
+          0% {
+            left: -200px;
+            top: 80%;
+            opacity: 0;
+            transform: scaleX(-1);
+          }
+          5% {
+            opacity: 0.6;
+          }
+          95% {
+            opacity: 0.6;
+          }
+          100% {            
+            left: calc(100% + 200px);
+            top: 10%;
+            opacity: 0;
+            transform: scaleX(-1);
+          }
+        }
   
-        .lunar-dragon.flying {
-          animation: dragonFly 8s ease-in-out;
+        .lunar-dragon.flying-left {
+          animation: dragonFlyLeft 11s ease-in-out;
+        }
+        .lunar-dragon.flying-right {
+          animation: dragonFlyRight 11s ease-in-out;
         }
   
         .dragon-head {
@@ -604,16 +628,23 @@ interface LanternConfig {
   
       // Make the dragon fly occasionally (every 15-25 seconds)
       const triggerDragonFlight = () => {
-        dragon.classList.add("flying");
+        // 1. Randomly choose a direction
+        const isFlyingLeft = Math.random() < 0.5;
+        const flightClass = isFlyingLeft ? "flying-left" : "flying-right";
         
+        // 2. Add the specific class
+        dragon.classList.add(flightClass);
+        console.log(`Dragon is soaring ${isFlyingLeft ? 'West' : 'East'}...`);
+    
         setTimeout(() => {
-          dragon.classList.remove("flying");
-          
-          // Schedule next flight after random interval
-          const nextFlight = 15000 + Math.random() * 10000; // 15-25 seconds
-          setTimeout(triggerDragonFlight, nextFlight);
-        }, 11000); // Animation duration
-      };
+            // 3. Remove whatever class was added
+            dragon.classList.remove("flying-left", "flying-right");
+            
+            // 4. Schedule next flight
+            const nextFlight = 5000 + Math.random() * 8000;
+            setTimeout(triggerDragonFlight, nextFlight);
+        }, 11000); // Must match the CSS animation duration
+    };
   
       // Initial flight after 5-10 seconds
       const initialDelay = 5000 + Math.random() * 5000;
