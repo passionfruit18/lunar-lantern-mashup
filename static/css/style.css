@@ -1,3 +1,60 @@
+/* Target the input fields */
+input[type="text"] {
+    /* 1. Glassmorphism Base */
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    /* 2. The Golden Border */
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    
+    /* 3. Typography & Spacing */
+    color: #ffffff;
+    font-family: 'JetBrains Mono', monospace; /* Matching your new score font */
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    outline: none; /* Remove the default blue browser outline */
+    transition: all 0.3s ease;
+    
+    /* 4. Center text for that 'Landing Page' feel */
+    text-align: center;
+    width: 250px;
+}
+
+/* The 'Focus' state: When the user clicks to type */
+input[type="text"]:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+    transform: translateY(-2px); /* Subtle lift effect */
+}
+
+/* Styling the Placeholder text (the 'Enter Username' hint) */
+input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Target the autofill state in Chrome, Edge, and Safari */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    /* 1. This 'fills' the background with your dark theme color */
+    -webkit-box-shadow: 0 0 0 1000px rgba(20, 0, 0, 0.9) inset !important;
+    
+    /* 2. This forces the text to stay white/gold */
+    -webkit-text-fill-color: #ffffff !important;
+    
+    /* 3. Maintains your glassmorphic blur */
+    backdrop-filter: blur(10px);
+    
+    /* 4. Match your existing border */
+    border: 1px solid rgba(255, 215, 0, 0.5) !important;
+}
+
 .game-container {
     display: flex;          /* Align children horizontally */
     flex-direction: row; /* Side-by-side */
@@ -12,7 +69,6 @@
 #game-canvas {
     flex-shrink: 0; /* Prevents the board from getting squished */
     border: 2px solid #333;
-    background-color: #fff;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
@@ -22,81 +78,81 @@
     max-height: 600px; /* Matches canvas height */
     overflow-y: auto; /* Adds scrollbar for long history */
     padding: 15px;
-    background-color: #f4f4f4;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 215, 0, 0.2);
     min-height: 600px; /* Match canvas height */
+    background: rgba(0, 0, 0, 0.4); /* Dark translucent background */
+    backdrop-filter: blur(10px);    /* This creates the "Glass" effect */
+    color: #fff;
 }
-
 
 #player-list {
     list-style: none;
-    padding: 0;
-}
-
-#player-list li {
-    padding: 10px;
-    margin-bottom: 8px;
-    background: white;
-    border-radius: 4px;
-    border-left: 5px solid #007bff; /* Nice blue accent for players */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.score-entry {
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #f9f9f9;
-    border-left: 4px solid #4a90e2;
-    border-radius: 4px;
-}
-
-.score-header {
-    font-size: 1.1em;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.synergy-box {
-    margin-top: 5px;
-    font-size: 0.9em;
-    color: #555;
-    font-style: italic;
+    padding-inline-start: 0px;
 }
 
 .player-card {
-    background: #ffffff;
-    border: 1px solid #e1e4e8;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    min-width: 350px
+    padding-bottom: 10px;
 }
 
-.player-card h3 {
-    margin-top: 0;
-    border-bottom: 2px solid #4a90e2;
-    padding-bottom: 8px;
-    color: #2c3e50;
+/* Update your player cards and list items */
+#player-list li, 
+.player-card, 
+.score-entry {
+    /* 1. Remove solid white and use semi-transparent dark or light */
+    background: rgba(255, 255, 255, 0.08) !important; 
+    
+    /* 2. The magic 'Glass' effect */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); /* For Safari support */
+    
+    /* 3. Soft golden borders instead of grey */
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    border-radius: 12px;
+    
+    /* 4. Update text colors for dark background */
+    color: #f0f0f0 !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Specific Header Tweak */
+.player-card h3, .score-header {
+    color: #ffaa00 !important; /* Gold/Orange headers */
+    border-bottom-color: rgba(255, 170, 0, 0.4) !important;
+    text-shadow: 0 0 8px rgba(255, 170, 0, 0.5);
+}
+
+/* Synergy Box (The AI Text) */
+.synergy-box {
+    color: #ddd !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
 }
 
 .player-card dl {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 8px 16px; /* Vertical and horizontal spacing */
-    margin: 0;
+    grid-template-columns: 1fr 3.5fr;
+    gap: 8px 16px;
 }
 
+/* Adjust the labels (dt) and values (dd) for visibility */
 .player-card dt {
-    font-weight: bold;
-    color: #586069;
+    color: #bbb !important;
     text-align: left;
+    padding-left: 10px
 }
 
 .player-card dd {
-    margin: 0; /* Important: removes default browser indent */
+    color: #fff !important;
+    font-family: 'Courier New', monospace; /* Makes hand look like tiles */
     text-align: right;
-    color: #24292e;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.score-entry {
+    font-family: "Google Sans", sans-serif;
+    padding: 10px;
 }
 
 .lantern-spinner {
@@ -127,7 +183,7 @@
     }
 }
 
-.lantern-glow-text:hover {
+.lantern-glow-text:hover, .lantern-glow-text-permanent {
     /* color: #fff; Brighten text on hover */
     text-shadow: 
         0 0 5px #ffaa00, 
@@ -137,6 +193,8 @@
     transition: all 0.5s ease;
     cursor: default;
 }
+
+
 
 .lantern-button {
     background-color: #b32d00; /* Deep Red */
@@ -167,12 +225,50 @@
 
 .hint-scroll {
     position: absolute;
-    background: #fdf5e6; /* Old paper color */
-    border-left: 5px solid #8b4513;
-    padding: 15px;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-    border-radius: 0 5px 5px 0;
-    font-family: 'Crimson Text', serif;
-    max-width: 250px;
+    /* 1. Translucent warm parchment instead of solid beige */
+    background: rgba(253, 245, 230, 0.15); 
+    
+    /* 2. Glassmorphism core */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    
+    /* 3. The 'Scroll' spine - use a glowing gold instead of brown */
+    border-left: 5px solid rgba(255, 215, 0, 0.6); 
+    
+    /* 4. Soft rounded edges and shadow */
+    border-radius: 0 12px 12px 0;
+    padding: 20px;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    
+    /* 5. Typography */
+    font-family: "Google Sans", sans-serif;
+    color: #fff;
+    max-width: 300px; /* Slightly wider for better legibility */
     z-index: 100;
+    
+    /* 6. Subtle inner glow */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    max-height: 80vh; /* Don't let it go off-screen */
+    overflow-y: auto;
+}
+
+/* Make the Hint headers pop */
+.hint-scroll h2, .hint-scroll strong {
+    color: #ffaa00;
+    text-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.hint-scroll ul {
+    padding: 0px;
+    list-style: none;
+}
+
+.hint-scroll li::before {
+    content: "🏮"; /* Or a custom SVG */
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px orange);
 }

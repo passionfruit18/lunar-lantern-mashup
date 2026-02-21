@@ -3,6 +3,7 @@ declare var io: any;
 
 import * as BoardModule from "./board";
 import * as PlayerModule from "./player";
+import './lunar-background';
 
 export const socket = io({
     transports: ["websocket"] 
@@ -57,25 +58,6 @@ socket.on('join_success', (data: SessionData) => {
     drawBoard(data.board);
 });
 
-// Expected after moves made
-socket.on('update_board', (data: SessionData) => {
-    drawBoard(data.board);
-});
-
-// Error
-socket.on('error', (data: {'message': string}) => {
-    alert(data.message);    
-    undoPendingMoves()
-});
-
-function undoPendingMoves() {
-    pendingMoves = []
-    if (globalBoard) {
-        drawBoard(globalBoard)
-    }
-}
-
-const cancelMove = undoPendingMoves
 
 function enterRoom(room_code: string, username: string) {
     currentRoom = room_code;
@@ -106,9 +88,11 @@ const toggleLoaders = (show: boolean): void => {
     });
 };
 
+const GLOW_COLOR = "#ffaa00"; // Warm Lantern Orange
+const TEXT_COLOR = "#ffffff"; // Bright White for the core of the letter
+
 // Draw the board!
-function drawBoard(board: BoardModule.Board) {
-    toggleLoaders(false)
+function drawBoard(board: BoardModule.Board) {    
     
     globalBoard = board;
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
@@ -121,10 +105,13 @@ function drawBoard(board: BoardModule.Board) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const x = c * size
             const y = r * size
-            ctx.strokeStyle = "#ccc";
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.2)";;
             ctx.strokeRect(x, y, size, size);
             if (board && board[r][c] && board[r][c].tile) {
-                ctx.fillStyle = "black";
+                // 2. Set the Glow Effect
+                ctx.shadowColor = GLOW_COLOR;
+                ctx.shadowBlur = 10; // The spread of the glow
+                ctx.fillStyle = TEXT_COLOR;
                 ctx.font = "20px Arial";
                 ctx.fillText(BoardModule.simplePrintSquare(board[r][c]), x + 10, y + 28);
             }
@@ -132,7 +119,10 @@ function drawBoard(board: BoardModule.Board) {
                 const pending = pendingMoves.find(m => m.row === r && m.col === c);
                 if (pending) {
                     // Draw with a different style to indicate it's not submitted
-                    ctx.fillStyle = "rgba(0, 102, 204, 0.7)"; // Translucent Blue
+                    // 3. Pending Tiles (Blue Magic Glow)
+                    ctx.shadowColor = "#00ccff";
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
                     ctx.font = "bold 20px Arial";
                     
                     // Center the text slightly differently if you like
@@ -209,12 +199,52 @@ function renderPendingMove(row: number, col: number, value: string) {
     }
 }
 
+function toggleSubmitButton(isLoading: boolean) {
+    const submitBtn = document.getElementById('submit-move-btn') as HTMLButtonElement;
+    if (!submitBtn) return;
+
+    if (isLoading) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Consulting Oracle...";
+        submitBtn.style.opacity = "0.5";
+        submitBtn.style.cursor = "not-allowed";
+    } else {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Move";
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+    }
+}
+
 function submitMove() {
     toggleLoaders(true)
+    toggleSubmitButton(true) // Disable submit button
     triggerExplosion(); // Celebration!
     socket.emit('submit_move', { pendingMoves: pendingMoves, room_code: currentRoom, player_id: myPlayerId });
     pendingMoves = []; // Clear for next turn
 }
+
+// Expected after moves made
+socket.on('update_board', (data: SessionData) => {
+    drawBoard(data.board);
+    toggleLoaders(false);
+    toggleSubmitButton(false); // Re-enable submit button
+});
+
+// Error
+socket.on('error', (data: {'message': string}) => {
+    alert(data.message);    
+    undoPendingMoves()
+});
+
+function undoPendingMoves() {
+    pendingMoves = []
+    if (globalBoard) {
+        drawBoard(globalBoard)
+    }
+}
+
+const cancelMove = undoPendingMoves
 
 let canvasInitialised = false
 
@@ -271,9 +301,27 @@ interface HintResultData {
     chineseHint: string;
 }
 
+function toggleHintButton(isLoading: boolean) {
+    const hintBtn = document.getElementById('hint-btn') as HTMLButtonElement;
+    if (!hintBtn) return;
+
+    if (isLoading) {
+        hintBtn.disabled = true;
+        hintBtn.innerText = "Consulting Oracle...";
+        hintBtn.style.opacity = "0.5";
+        hintBtn.style.cursor = "not-allowed";
+    } else {
+        hintBtn.disabled = false;
+        hintBtn.innerText = "Get Hint";
+        hintBtn.style.opacity = "1";
+        hintBtn.style.cursor = "pointer";
+    }
+}
+
 function getHint() {
     // Show that specific lantern spinner we built!
     toggleLoaders(true);
+    toggleHintButton(true); // Disable Hint Button
     
     // Emit the request with the specific type
     socket.emit('request_hint', { 
@@ -285,6 +333,7 @@ function getHint() {
 // This fires for everyone whenever the player list changes
 socket.on('display_hint', (data: HintResultData) => {
     toggleLoaders(false)
+    toggleHintButton(false) // Re-enable hint button
     display_hint(data)
 });
 
@@ -312,6 +361,7 @@ function leaveGame() {
     location.reload();
 }
 
+// Explosion whenever the user submits a move
 function triggerExplosion() {
     const maxRadius = 150; // How far they fly
     const particle_num = 80
@@ -340,12 +390,103 @@ function triggerExplosion() {
     }
 }
 
+// Make elements draggable (used for hint scroll)
+function makeDraggable(el: HTMLElement) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-// Export functions to window.
-// TODO: Maybe better to use Event Listeners later
-(window as any).createGame = createGame;
-(window as any).joinGame = joinGame;
-(window as any).leaveGame = leaveGame;
-(window as any).submitMove = submitMove;
-(window as any).cancelMove = cancelMove;
-(window as any).getHint = getHint;
+    el.onmousedown = (e: MouseEvent) => {
+        e.preventDefault();
+        // Get mouse position at startup
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    };
+
+    function elementDrag(e: MouseEvent) {
+        e.preventDefault();
+        // Calculate new cursor position
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // Set element's new position
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        // Stop moving when mouse button is released
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
+
+// Define your initialization function
+function initializeUI() {
+    const hintScrollElement = document.querySelector('.hint-scroll') as HTMLElement;
+
+    if (hintScrollElement) {
+        // Attach the draggable logic we built
+        makeDraggable(hintScrollElement);
+        console.log("Hint Scroll initialized and draggable.");
+    } else {
+        console.warn("Hint Scroll element not found in the DOM.");
+    }
+
+    setupUIListenersInput()
+    setupUIListenersButtons()
+}
+
+// The "Document Ready" Listener
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeUI);
+} else {
+    // DOM is already ready (e.g., if the script is deferred or loaded late)
+    initializeUI();
+}
+
+function setupUIListenersInput() {
+
+    const nameInput = document.getElementById('username') as HTMLInputElement;
+    const codeInput = document.getElementById('session-code') as HTMLInputElement;
+
+    // Function to handle the "Smart Enter" logic
+    const handleSmartEnter = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            const roomCode = codeInput?.value.trim();
+
+            if (roomCode && roomCode.length > 0) {
+                // If there's text in the code box, try to join
+                console.log("Room code detected, joining game...");
+                joinGame(); 
+            } else {
+                // If the code box is empty, assume they want a new game
+                console.log("No room code, creating new game...");
+                createGame();
+            }
+        }
+    };
+
+    // Attach the listener to BOTH inputs for the best UX
+    nameInput?.addEventListener('keypress', handleSmartEnter);
+    codeInput?.addEventListener('keypress', handleSmartEnter);
+    nameInput?.focus();    
+}
+
+function setupUIListenersButtons() {
+    // Export functions to window.
+    // TODO: Maybe better to use Event Listeners later
+    // 1. Game Actions
+    document.getElementById('create-game-btn')?.addEventListener('click', createGame);
+    document.getElementById('join-game-btn')?.addEventListener('click', joinGame);
+    document.getElementById('leave-game-btn')?.addEventListener('click', leaveGame);
+
+    // 2. Gameplay Actions
+    document.getElementById('submit-move-btn')?.addEventListener('click', submitMove);
+    document.getElementById('cancel-move-btn')?.addEventListener('click', cancelMove);
+
+    // 3. The Hint System
+    const hintBtn = document.getElementById('hint-btn')?.addEventListener('click', getHint);    
+}
+

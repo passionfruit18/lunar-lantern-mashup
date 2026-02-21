@@ -14,26 +14,30 @@
 
     <style>
         body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
-        #game-canvas { background: #fff; border: 2px solid #333; cursor: pointer; }
+        #game-canvas { border: 2px solid #333; cursor: pointer; }
         .menu { margin-top: 50px; }
         .hidden { display: none; }
         #controls { margin-top: 10px; }
     </style>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
     <link rel="icon" type="image/png" href="/static/lantern-favicon.png">
 
 </head>
 <body>
-    <h1 class="lantern-glow-text">🏮 Lunar Lantern Mashup: A Lexical Logical Melee 🏮</h1>
+    <h1 class="lantern-glow-text-permanent">🏮 Lunar Lantern Mashup: A Lexical Logical Melee 🏮</h1>
 
     <div id="setup-area" class="menu">
         <input type="text" id="username" placeholder="Enter Username" required>
         <br><br>
-        <button class="lantern-button" onclick="createGame()">Create New Game</button>
+        <button class="lantern-button" id="create-game-btn" onclick="createGame()">Create New Game</button>
         <br><br>
         <input type="text" id="session-code" placeholder="Enter Code">
         <br><br>
-        <button class="lantern-button" onclick="joinGame()">Join Game</button>
+        <button class="lantern-button" id="join-game-btn" onclick="joinGame()">Join Game</button>
     </div>
 
     <div id="debug-info" style="display: none">
@@ -42,11 +46,13 @@
     </div>
 
     <div id="game-area" class="hidden">
-        <h3>Room: <span id="display-room-code"></span></h3>
-        <h3>User: <span id="display-username"></span></h3>
+        <div class="lantern-glow-text-permanent">
+            <h3>Room: <span id="display-room-code"></span></h3>
+            <h3>User: <span id="display-username"></span></h3>
+        </div>
         <div class="lantern-loader" style="display:none;">
             <span class="lantern-spinner">🏮</span>
-            <p>Consulting the Oracle...</p>
+            <p class="lantern-glow-text-permanent">Consulting the Oracle...</p>
         </div>
         <div class="game-container">
             <canvas id="game-canvas" width="600" height="600"></canvas>
@@ -57,24 +63,24 @@
             </div>
         </div>
         <div class="hint-scroll">
-            Hints
+            <h2>Hints</h2>
         </div>
         <div id="controls">
-            <p class="lantern-glow-text">Click a square to place a tile</p>
-            <button class="lantern-button" onclick="getHint()">Get Hint</button>
+            <p class="lantern-glow-text-permanent">Click a square to place a tile</p>
+            <button class="lantern-button" id="submit-move-btn" onclick="submitMove()">Submit Move</button>            
             <br/><br/>
-            <button class="lantern-button" onclick="submitMove()">Submit Move</button>
+            <button class="lantern-button" id="hint-btn" onclick="getHint()">Get Hint</button>
             <br/><br/>
             <div class="lantern-loader" style="display:none;">
                 <span class="lantern-spinner">🏮</span>
-                <p>Consulting the Oracle...</p>
+                <p class="lantern-glow-text-permanent">Consulting the Oracle...</p>
             </div>
             <br/><br/>
-            <button class="lantern-button" onclick="cancelMove()">Cancel Move</button>
+            <button class="lantern-button" id="cancel-move-btn" onclick="cancelMove()">Cancel Move</button>
             <br/><br/><br/><br/><br/><br/>
-            <button class="lantern-button" onclick="leaveGame()">Leave</button>
+            <button class="lantern-button" id="leave-game-btn" onclick="leaveGame()">Leave</button>
             <br/><br/><br/>
-            <a href="https://www.flaticon.com/free-icons/chinese-lantern" title="chinese lantern icons">Chinese lantern icons created by frdmn - Flaticon</a>
+
         </div>
     </div>
 
@@ -110,7 +116,7 @@
             In this game, your task is to act as the Lantern Master, finding the linguistic and spiritual "synergy" between disparate symbols.
             When the AI recognizes a match, it's a sign that the elements have found their harmony for the coming year.
         </p>
-
+        <a href="https://www.flaticon.com/free-icons/chinese-lantern" title="chinese lantern icons">Chinese lantern icons created by frdmn - Flaticon</a>
 
     </section>
 
