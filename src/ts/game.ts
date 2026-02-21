@@ -200,7 +200,7 @@ function renderPendingMove(row: number, col: number, value: string) {
 }
 
 function toggleSubmitButton(isLoading: boolean) {
-    const submitBtn = document.getElementById('submit-button') as HTMLButtonElement;
+    const submitBtn = document.getElementById('submit-move-btn') as HTMLButtonElement;
     if (!submitBtn) return;
 
     if (isLoading) {
@@ -302,7 +302,7 @@ interface HintResultData {
 }
 
 function toggleHintButton(isLoading: boolean) {
-    const hintBtn = document.getElementById('hint-button') as HTMLButtonElement;
+    const hintBtn = document.getElementById('hint-btn') as HTMLButtonElement;
     if (!hintBtn) return;
 
     if (isLoading) {
@@ -433,7 +433,7 @@ function initializeUI() {
     } else {
         console.warn("Hint Scroll element not found in the DOM.");
     }
-    
+
     setupUIListenersInput()
     setupUIListenersButtons()
 }
@@ -483,10 +483,10 @@ function setupUIListenersButtons() {
     document.getElementById('leave-game-btn')?.addEventListener('click', leaveGame);
 
     // 2. Gameplay Actions
-    document.getElementById('submit-button')?.addEventListener('click', submitMove);
-    document.getElementById('cancel-button')?.addEventListener('click', cancelMove);
+    document.getElementById('submit-move-btn')?.addEventListener('click', submitMove);
+    document.getElementById('cancel-move-btn')?.addEventListener('click', cancelMove);
 
     // 3. The Hint System
-    const hintBtn = document.getElementById('hint-button')?.addEventListener('click', getHint);    
+    const hintBtn = document.getElementById('hint-btn')?.addEventListener('click', getHint);    
 }
 
