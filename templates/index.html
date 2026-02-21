@@ -33,11 +33,11 @@
     <div id="setup-area" class="menu">
         <input type="text" id="username" placeholder="Enter Username" required>
         <br><br>
-        <button class="lantern-button" onclick="createGame()">Create New Game</button>
+        <button class="lantern-button" id="create-game-btn" onclick="createGame()">Create New Game</button>
         <br><br>
         <input type="text" id="session-code" placeholder="Enter Code">
         <br><br>
-        <button class="lantern-button" onclick="joinGame()">Join Game</button>
+        <button class="lantern-button" id="join-game-btn" onclick="joinGame()">Join Game</button>
     </div>
 
     <div id="debug-info" style="display: none">
@@ -76,9 +76,9 @@
                 <p class="lantern-glow-text-permanent">Consulting the Oracle...</p>
             </div>
             <br/><br/>
-            <button class="lantern-button" onclick="cancelMove()">Cancel Move</button>
+            <button class="lantern-button" id="cancel-button" onclick="cancelMove()">Cancel Move</button>
             <br/><br/><br/><br/><br/><br/>
-            <button class="lantern-button" onclick="leaveGame()">Leave</button>
+            <button class="lantern-button" id="leave-game-btn" onclick="leaveGame()">Leave</button>
             <br/><br/><br/>
 
         </div>

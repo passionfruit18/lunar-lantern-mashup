@@ -433,6 +433,20 @@ function initializeUI() {
     } else {
         console.warn("Hint Scroll element not found in the DOM.");
     }
+    
+    setupUIListenersInput()
+    setupUIListenersButtons()
+}
+
+// The "Document Ready" Listener
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeUI);
+} else {
+    // DOM is already ready (e.g., if the script is deferred or loaded late)
+    initializeUI();
+}
+
+function setupUIListenersInput() {
 
     const nameInput = document.getElementById('username') as HTMLInputElement;
     const codeInput = document.getElementById('session-code') as HTMLInputElement;
@@ -457,22 +471,22 @@ function initializeUI() {
     // Attach the listener to BOTH inputs for the best UX
     nameInput?.addEventListener('keypress', handleSmartEnter);
     codeInput?.addEventListener('keypress', handleSmartEnter);
-    nameInput?.focus();
+    nameInput?.focus();    
 }
 
-// The "Document Ready" Listener
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeUI);
-} else {
-    // DOM is already ready (e.g., if the script is deferred or loaded late)
-    initializeUI();
+function setupUIListenersButtons() {
+    // Export functions to window.
+    // TODO: Maybe better to use Event Listeners later
+    // 1. Game Actions
+    document.getElementById('create-game-btn')?.addEventListener('click', createGame);
+    document.getElementById('join-game-btn')?.addEventListener('click', joinGame);
+    document.getElementById('leave-game-btn')?.addEventListener('click', leaveGame);
+
+    // 2. Gameplay Actions
+    document.getElementById('submit-button')?.addEventListener('click', submitMove);
+    document.getElementById('cancel-button')?.addEventListener('click', cancelMove);
+
+    // 3. The Hint System
+    const hintBtn = document.getElementById('hint-button')?.addEventListener('click', getHint);    
 }
 
-// Export functions to window.
-// TODO: Maybe better to use Event Listeners later
-(window as any).createGame = createGame;
-(window as any).joinGame = joinGame;
-(window as any).leaveGame = leaveGame;
-(window as any).submitMove = submitMove;
-(window as any).cancelMove = cancelMove;
-(window as any).getHint = getHint;
