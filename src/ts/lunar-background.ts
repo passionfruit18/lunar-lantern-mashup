@@ -6,7 +6,7 @@
 interface LanternConfig {
     left: string;
     delay: number;
-    size: 'small' | 'medium' | 'large';
+    size: "small" | "medium" | "large";
   }
   
   class LunarBackground {
@@ -14,8 +14,8 @@ interface LanternConfig {
     private styleSheet: HTMLStyleElement;
   
     constructor() {
-      this.container = document.createElement('div');
-      this.styleSheet = document.createElement('style');
+      this.container = document.createElement("div");
+      this.styleSheet = document.createElement("style");
       this.init();
     }
   
@@ -23,6 +23,7 @@ interface LanternConfig {
       this.injectStyles();
       this.createBackground();
       this.createLanterns();
+      this.createDragon();
     }
   
     private injectStyles(): void {
@@ -68,6 +69,207 @@ interface LanternConfig {
           width: 320px;
           height: 320px;
           background: #dc2626;
+        }
+  
+        .lunar-dragon {
+          position: absolute;
+          top: 40%;
+          left: -200px;
+          width: 180px;
+          height: 80px;
+          opacity: 0;
+          filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.4));
+        }
+  
+        @keyframes dragonFlyLeft {
+          0% {
+            left: calc(100% + 200px);
+            top: var(--start-top); /* Variable height */
+            opacity: 0;
+          }
+          5% {
+            opacity: 0.6;
+          }
+          95% {
+            opacity: 0.6;
+          }
+          100% {
+            left: -200px;
+            top: var(--end-top); /* Variable height */
+            opacity: 0;
+          }
+        }
+
+        @keyframes dragonFlyRight {
+          0% {
+            left: -200px;
+            top: var(--start-top); /* Variable height */
+            opacity: 0;
+            transform: scaleX(-1);
+          }
+          5% {
+            opacity: 0.6;
+          }
+          95% {
+            opacity: 0.6;
+          }
+          100% {            
+            left: calc(100% + 200px);
+            top: var(--end-top); /* Variable height */
+            opacity: 0;
+            transform: scaleX(-1);
+          }
+        }
+  
+        .lunar-dragon.flying-left {
+          animation: dragonFlyLeft 11s ease-in-out;
+        }
+        .lunar-dragon.flying-right {
+          animation: dragonFlyRight 11s ease-in-out;
+        }
+  
+        .dragon-head {
+          position: absolute;
+          left: 0;
+          top: 20px;
+          width: 50px;
+          height: 40px;
+        }
+  
+        .dragon-snout {
+          position: absolute;
+          left: 0;
+          top: 10px;
+          width: 30px;
+          height: 20px;
+          background: linear-gradient(135deg, #22c55e, #16a34a);
+          border-radius: 15px 5px 5px 15px;
+        }
+  
+        .dragon-face {
+          position: absolute;
+          left: 20px;
+          top: 5px;
+          width: 30px;
+          height: 30px;
+          background: linear-gradient(135deg, #16a34a, #15803d);
+          border-radius: 50%;
+        }
+  
+        .dragon-eye {
+          position: absolute;
+          top: 8px;
+          left: 18px;
+          width: 6px;
+          height: 6px;
+          background: #fef08a;
+          border-radius: 50%;
+          border: 1px solid #854d0e;
+        }
+  
+        .dragon-horn {
+          position: absolute;
+          top: -5px;
+          width: 8px;
+          height: 12px;
+          background: linear-gradient(to top, #15803d, #ca8a04);
+          clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+  
+        .dragon-horn-left {
+          left: 22px;
+        }
+  
+        .dragon-horn-right {
+          left: 32px;
+        }
+  
+        .dragon-body {
+          position: absolute;
+          left: 45px;
+          top: 25px;
+          width: 60px;
+          height: 30px;
+          background: linear-gradient(90deg, #16a34a, #22c55e, #16a34a);
+          border-radius: 15px;
+        }
+  
+        .dragon-scale {
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: #15803d;
+          border-radius: 50% 50% 0 50%;
+          opacity: 0.6;
+        }
+  
+        .dragon-scale-1 { left: 10px; top: 5px; }
+        .dragon-scale-2 { left: 25px; top: 8px; }
+        .dragon-scale-3 { left: 40px; top: 5px; }
+        .dragon-scale-4 { left: 15px; top: 15px; }
+        .dragon-scale-5 { left: 35px; top: 17px; }
+  
+        .dragon-tail {
+          position: absolute;
+          left: 100px;
+          top: 28px;
+          width: 80px;
+          height: 24px;
+        }
+  
+        .dragon-tail-segment {
+          position: absolute;
+          background: linear-gradient(90deg, #22c55e, #4ade80);
+          border-radius: 50%;
+        }
+  
+        .dragon-tail-segment-1 {
+          left: 0;
+          width: 30px;
+          height: 24px;
+        }
+  
+        .dragon-tail-segment-2 {
+          left: 25px;
+          width: 25px;
+          height: 20px;
+          top: 2px;
+        }
+  
+        .dragon-tail-segment-3 {
+          left: 45px;
+          width: 20px;
+          height: 16px;
+          top: 4px;
+        }
+  
+        .dragon-tail-segment-4 {
+          left: 60px;
+          width: 15px;
+          height: 12px;
+          top: 6px;
+        }
+  
+        .dragon-wing {
+          position: absolute;
+          left: 55px;
+          top: 15px;
+          width: 35px;
+          height: 25px;
+          background: linear-gradient(135deg, #4ade80, #22c55e);
+          border-radius: 50% 50% 0 0;
+          opacity: 0.7;
+          transform-origin: bottom left;
+          animation: wingFlap 0.5s ease-in-out infinite;
+        }
+  
+        @keyframes wingFlap {
+          0%, 100% {
+            transform: translateY(0) scaleY(1);
+          }
+          50% {
+            transform: translateY(-5px) scaleY(1.2);
+          }
         }
   
         .lunar-lantern {
@@ -210,115 +412,122 @@ interface LanternConfig {
     }
   
     private createBackground(): void {
-      this.container.className = 'lunar-bg-container';
+      this.container.className = "lunar-bg-container";
   
       // Pattern overlay
-      const pattern = document.createElement('div');
-      pattern.className = 'lunar-bg-pattern';
+      const pattern = document.createElement("div");
+      pattern.className = "lunar-bg-pattern";
       this.container.appendChild(pattern);
   
       // Glow effects
-      const glow1 = document.createElement('div');
-      glow1.className = 'lunar-bg-glow lunar-bg-glow-1';
+      const glow1 = document.createElement("div");
+      glow1.className = "lunar-bg-glow lunar-bg-glow-1";
       this.container.appendChild(glow1);
   
-      const glow2 = document.createElement('div');
-      glow2.className = 'lunar-bg-glow lunar-bg-glow-2';
+      const glow2 = document.createElement("div");
+      glow2.className = "lunar-bg-glow lunar-bg-glow-2";
       this.container.appendChild(glow2);
     }
   
     private createLanterns(): void {
       // Front layer lanterns
       const frontLanterns: LanternConfig[] = [
-        { left: '8%', delay: 0, size: 'medium' },
-        { left: '22%', delay: 0.5, size: 'small' },
-        { left: '35%', delay: 1, size: 'large' },
-        { left: '50%', delay: 1.5, size: 'medium' },
-        { left: '65%', delay: 2, size: 'large' },
-        { left: '78%', delay: 2.5, size: 'small' },
-        { left: '92%', delay: 3, size: 'medium' },
+        { left: "8%", delay: 0, size: "medium" },
+        { left: "22%", delay: 0.5, size: "small" },
+        { left: "35%", delay: 1, size: "large" },
+        { left: "50%", delay: 1.5, size: "medium" },
+        { left: "65%", delay: 2, size: "large" },
+        { left: "78%", delay: 2.5, size: "small" },
+        { left: "92%", delay: 3, size: "medium" },
       ];
   
       // Back layer lanterns
       const backLanterns: LanternConfig[] = [
-        { left: '15%', delay: 1.2, size: 'small' },
-        { left: '42%', delay: 2.2, size: 'medium' },
-        { left: '72%', delay: 0.8, size: 'small' },
-        { left: '88%', delay: 1.8, size: 'medium' },
+        { left: "15%", delay: 1.2, size: "small" },
+        { left: "42%", delay: 2.2, size: "medium" },
+        { left: "72%", delay: 0.8, size: "small" },
+        { left: "88%", delay: 1.8, size: "medium" },
       ];
   
-      frontLanterns.forEach(config => {
-        this.container.appendChild(this.createLantern(config, false));
+      frontLanterns.forEach((config) => {
+        this.container.appendChild(
+          this.createLantern(config, false),
+        );
       });
   
-      backLanterns.forEach(config => {
-        this.container.appendChild(this.createLantern(config, true));
+      backLanterns.forEach((config) => {
+        this.container.appendChild(
+          this.createLantern(config, true),
+        );
       });
     }
   
-    private createLantern(config: LanternConfig, isBackLayer: boolean): HTMLDivElement {
-      const lantern = document.createElement('div');
+    private createLantern(
+      config: LanternConfig,
+      isBackLayer: boolean,
+    ): HTMLDivElement {
+      const lantern = document.createElement("div");
       lantern.className = `lunar-lantern lunar-lantern-${config.size}`;
       if (isBackLayer) {
-        lantern.classList.add('lunar-lantern-layer-back');
+        lantern.classList.add("lunar-lantern-layer-back");
       }
       lantern.style.left = config.left;
       lantern.style.animationDelay = `${config.delay}s`;
   
       // String
-      const string = document.createElement('div');
-      string.className = 'lunar-lantern-string';
+      const string = document.createElement("div");
+      string.className = "lunar-lantern-string";
       lantern.appendChild(string);
   
       // Body container
-      const body = document.createElement('div');
-      body.className = 'lunar-lantern-body';
+      const body = document.createElement("div");
+      body.className = "lunar-lantern-body";
   
       // Top cap
-      const topCap = document.createElement('div');
-      topCap.className = 'lunar-lantern-top-cap';
+      const topCap = document.createElement("div");
+      topCap.className = "lunar-lantern-top-cap";
       body.appendChild(topCap);
   
       // Main lantern body
-      const main = document.createElement('div');
-      main.className = 'lunar-lantern-main';
+      const main = document.createElement("div");
+      main.className = "lunar-lantern-main";
   
       // Decorative lines
-      const line1 = document.createElement('div');
-      line1.className = 'lunar-lantern-line lunar-lantern-line-1';
+      const line1 = document.createElement("div");
+      line1.className = "lunar-lantern-line lunar-lantern-line-1";
       main.appendChild(line1);
   
-      const line2 = document.createElement('div');
-      line2.className = 'lunar-lantern-line lunar-lantern-line-2';
+      const line2 = document.createElement("div");
+      line2.className = "lunar-lantern-line lunar-lantern-line-2";
       main.appendChild(line2);
   
       // Gold border
-      const border = document.createElement('div');
-      border.className = 'lunar-lantern-border';
+      const border = document.createElement("div");
+      border.className = "lunar-lantern-border";
       main.appendChild(border);
   
       // Shine effect
-      const shine = document.createElement('div');
-      shine.className = 'lunar-lantern-shine';
+      const shine = document.createElement("div");
+      shine.className = "lunar-lantern-shine";
       main.appendChild(shine);
   
       body.appendChild(main);
   
       // Bottom cap
-      const bottomCap = document.createElement('div');
-      bottomCap.className = 'lunar-lantern-bottom-cap';
+      const bottomCap = document.createElement("div");
+      bottomCap.className = "lunar-lantern-bottom-cap";
       body.appendChild(bottomCap);
   
       // Tassel
-      const tassel = document.createElement('div');
-      tassel.className = 'lunar-lantern-tassel';
-      
-      const tasselString = document.createElement('div');
-      tasselString.className = 'lunar-lantern-tassel-string';
+      const tassel = document.createElement("div");
+      tassel.className = "lunar-lantern-tassel";
+  
+      const tasselString = document.createElement("div");
+      tasselString.className = "lunar-lantern-tassel-string";
       tassel.appendChild(tasselString);
   
-      const tasselFringe = document.createElement('div');
-      tasselFringe.className = 'lunar-lantern-tassel-fringe';
+      const tasselFringe = document.createElement("div");
+      tasselFringe.className = "lunar-lantern-tassel-fringe";
       tassel.appendChild(tasselFringe);
   
       body.appendChild(tassel);
@@ -327,8 +536,158 @@ interface LanternConfig {
       return lantern;
     }
   
+    private createDragon(): void {
+      const dragon = document.createElement("div");
+      dragon.className = "lunar-dragon";
+  
+      // Head
+      const head = document.createElement("div");
+      head.className = "dragon-head";
+  
+      // Snout
+      const snout = document.createElement("div");
+      snout.className = "dragon-snout";
+      head.appendChild(snout);
+  
+      // Face
+      const face = document.createElement("div");
+      face.className = "dragon-face";
+      head.appendChild(face);
+  
+      // Eye
+      const eye = document.createElement("div");
+      eye.className = "dragon-eye";
+      face.appendChild(eye);
+  
+      // Horns
+      const hornLeft = document.createElement("div");
+      hornLeft.className = "dragon-horn dragon-horn-left";
+      face.appendChild(hornLeft);
+  
+      const hornRight = document.createElement("div");
+      hornRight.className = "dragon-horn dragon-horn-right";
+      face.appendChild(hornRight);
+  
+      dragon.appendChild(head);
+  
+      // Body
+      const body = document.createElement("div");
+      body.className = "dragon-body";
+  
+      // Scales
+      const scale1 = document.createElement("div");
+      scale1.className = "dragon-scale dragon-scale-1";
+      body.appendChild(scale1);
+  
+      const scale2 = document.createElement("div");
+      scale2.className = "dragon-scale dragon-scale-2";
+      body.appendChild(scale2);
+  
+      const scale3 = document.createElement("div");
+      scale3.className = "dragon-scale dragon-scale-3";
+      body.appendChild(scale3);
+  
+      const scale4 = document.createElement("div");
+      scale4.className = "dragon-scale dragon-scale-4";
+      body.appendChild(scale4);
+  
+      const scale5 = document.createElement("div");
+      scale5.className = "dragon-scale dragon-scale-5";
+      body.appendChild(scale5);
+  
+      dragon.appendChild(body);
+  
+      // Tail
+      const tail = document.createElement("div");
+      tail.className = "dragon-tail";
+  
+      const tailSegment1 = document.createElement("div");
+      tailSegment1.className = "dragon-tail-segment dragon-tail-segment-1";
+      tail.appendChild(tailSegment1);
+  
+      const tailSegment2 = document.createElement("div");
+      tailSegment2.className = "dragon-tail-segment dragon-tail-segment-2";
+      tail.appendChild(tailSegment2);
+  
+      const tailSegment3 = document.createElement("div");
+      tailSegment3.className = "dragon-tail-segment dragon-tail-segment-3";
+      tail.appendChild(tailSegment3);
+  
+      const tailSegment4 = document.createElement("div");
+      tailSegment4.className = "dragon-tail-segment dragon-tail-segment-4";
+      tail.appendChild(tailSegment4);
+  
+      dragon.appendChild(tail);
+  
+      // Wing
+      const wing = document.createElement("div");
+      wing.className = "dragon-wing";
+      dragon.appendChild(wing);
+  
+      this.container.appendChild(dragon);
+
+      const fastFlightIntervals = true
+
+      // Make the dragon fly occasionally (every 15-25 seconds)
+      const triggerDragonFlight = () => {
+
+        // 1. Calculate random heights (between 10% and 90% of screen height)
+        // This creates more 'Extreme' random numbers
+        const getRandomHeight = () => {
+            // We use (Math.random() > 0.5) to decide if we favor the top or bottom
+            const bias = Math.random() > 0.5 ? 1 : -1;
+            const variance = Math.sqrt(Math.random()) * 40; // 0 to 40
+            return 50 + (bias * (variance + 10)); // Results swing toward 10% or 90%
+        };
+
+        const startY = getRandomHeight();
+        const endY = getRandomHeight();
+
+        // 2. Inject heights into CSS Variables
+        dragon.style.setProperty('--start-top', `${startY}%`);
+        dragon.style.setProperty('--end-top', `${endY}%`);
+
+        // 3. Randomly choose a direction
+        const isFlyingLeft = Math.random() < 0.5;
+        const flightClass = isFlyingLeft ? "flying-left" : "flying-right";
+        
+        // 4. Add the specific class
+        dragon.classList.add(flightClass);
+        console.log(`Dragon is soaring ${isFlyingLeft ? 'West' : 'East'}...`);    
+
+        setTimeout(() => {
+            // 5. Remove whatever class was added
+            dragon.classList.remove("flying-left", "flying-right");
+            
+            // 6. Schedule next flight
+            
+            let nextFlight = 12000
+            if (fastFlightIntervals) {
+                nextFlight = 1000 + Math.random() * 1000;
+            }
+            else {
+                nextFlight = 5000 + Math.random() * 8000;
+            }            
+            setTimeout(triggerDragonFlight, nextFlight);
+        }, 11000); // Must match the CSS animation duration
+    };
+  
+      // Initial flight after 5-10 seconds
+      let initialDelay = 5000
+      if (fastFlightIntervals) {
+        initialDelay = 1000 + Math.random() * 1000;
+      }
+      else {
+        initialDelay = 5000 + Math.random() * 5000;
+      }      
+      setTimeout(triggerDragonFlight, initialDelay);
+    }
+  
     public inject(): void {
-      document.body.insertBefore(this.container, document.body.firstChild);
+      document.body.insertBefore(
+        this.container,
+        document.body.firstChild,
+      );
     }
   
     public remove(): void {
@@ -338,8 +697,8 @@ interface LanternConfig {
   }
   
   // Auto-initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
       const lunarBg = new LunarBackground();
       lunarBg.inject();
     });
@@ -350,4 +709,3 @@ interface LanternConfig {
   
   // Export for manual control if needed
   export default LunarBackground;
-  
