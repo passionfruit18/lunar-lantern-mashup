@@ -74,8 +74,8 @@ class SynergyEngine:
         Give the user a hint.
         
         Return a JSON object with:
-        1. 'english_hint': How to form an English word with English letters '{eng_letters_joined}'. Literally give a few examples. Focus on Science/Technology/AI examples.
-        2. 'chinese_hint': Explain (in English) the etymology of Chinese words '{chin_words_joined}'. First give the meaning of the word in a STEM/AI context. This should be inside an HTML <ul> element, each word has a <li> element.
+        1. 'english_hint': How to form an English word with English letters '{eng_letters_joined}'. Literally give a few examples. Focus on STEM/AI examples. Give brief Latin/Greek/etc. etymology for curious students of English.
+        2. 'chinese_hint': Explain (in English) the etymology of Chinese words '{chin_words_joined}'. First give the meaning of the word in a STEM/AI context. This should be inside an HTML <ul> element, each word has a <li> element. The whole explanation should seamlessly blend ancient heritage, historical continuity, and modern metaphor for heritage learners.
         """
 
         print(f"Requesting Gemini to give a hint for ENGLISH: [{eng_letters_joined}] and CHINESE: [{chin_words_joined}]")

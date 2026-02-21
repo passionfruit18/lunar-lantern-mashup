@@ -43,7 +43,7 @@ class Hand:
 
     def replenish_hand(self):
         """Refills hand to exactly 10 of each type."""
-        while len(self.chinese_characters) < 20:
+        while len(self.chinese_characters) < 8:
             self.chinese_characters.append(selectRandomChineseCharacter())
             
         while len(self.english_letters) < 10:
