@@ -1,3 +1,60 @@
+/* Target the input fields */
+input[type="text"] {
+    /* 1. Glassmorphism Base */
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    /* 2. The Golden Border */
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    
+    /* 3. Typography & Spacing */
+    color: #ffffff;
+    font-family: 'JetBrains Mono', monospace; /* Matching your new score font */
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    outline: none; /* Remove the default blue browser outline */
+    transition: all 0.3s ease;
+    
+    /* 4. Center text for that 'Landing Page' feel */
+    text-align: center;
+    width: 250px;
+}
+
+/* The 'Focus' state: When the user clicks to type */
+input[type="text"]:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+    transform: translateY(-2px); /* Subtle lift effect */
+}
+
+/* Styling the Placeholder text (the 'Enter Username' hint) */
+input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Target the autofill state in Chrome, Edge, and Safari */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    /* 1. This 'fills' the background with your dark theme color */
+    -webkit-box-shadow: 0 0 0 1000px rgba(20, 0, 0, 0.9) inset !important;
+    
+    /* 2. This forces the text to stay white/gold */
+    -webkit-text-fill-color: #ffffff !important;
+    
+    /* 3. Maintains your glassmorphic blur */
+    backdrop-filter: blur(10px);
+    
+    /* 4. Match your existing border */
+    border: 1px solid rgba(255, 215, 0, 0.5) !important;
+}
+
 .game-container {
     display: flex;          /* Align children horizontally */
     flex-direction: row; /* Side-by-side */
