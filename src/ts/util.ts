@@ -1,8 +1,17 @@
 
+import { Board } from "./board";
 
 export const socket = io({
     transports: ["websocket"] 
 });
+
+
+export interface SessionData {
+    room_code: string;
+    username: string;
+    board: Board;    // Uses the Board type defined above
+}
+
 
 
 export const toggleLoaders = (show: boolean): void => {
