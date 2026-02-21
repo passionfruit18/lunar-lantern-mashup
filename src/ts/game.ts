@@ -3,6 +3,7 @@ declare var io: any;
 
 import * as BoardModule from "./board";
 import * as PlayerModule from "./player";
+import './lunar-background';
 
 export const socket = io({
     transports: ["websocket"] 

@@ -127,7 +127,7 @@
     }
 }
 
-.lantern-glow-text:hover {
+.lantern-glow-text:hover, .lantern-glow-text-permanent {
     /* color: #fff; Brighten text on hover */
     text-shadow: 
         0 0 5px #ffaa00, 
@@ -137,6 +137,8 @@
     transition: all 0.5s ease;
     cursor: default;
 }
+
+
 
 .lantern-button {
     background-color: #b32d00; /* Deep Red */
